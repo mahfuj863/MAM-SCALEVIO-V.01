@@ -944,6 +944,260 @@ function initCMSData() {
     }
 }
 
+// ─── ROI CALCULATOR ─────────────────────────────────────────────────────────
+function initRoiCalculator() {
+    const calcSection = document.getElementById('calculator');
+    if (!calcSection) return;
+
+    // Inputs & Sliders
+    const spendInput = document.getElementById('calcSpendInput');
+    const spendRange = document.getElementById('calcSpendRange');
+    const spendCurr = document.getElementById('calcSpendCurr');
+    const spendChips = document.querySelectorAll('.calc-chip[data-spend]');
+
+    const acosInput = document.getElementById('calcAcosInput');
+    const acosRange = document.getElementById('calcAcosRange');
+    const acosChips = document.querySelectorAll('.calc-chip[data-acos]');
+
+    const tierCards = document.querySelectorAll('.calc-tier-card');
+    const currButtons = document.querySelectorAll('.btn-currency');
+
+    // Outputs
+    const monthlySavingsVal = document.getElementById('calcMonthlySavingsVal');
+    const annualSavingsVal = document.getElementById('calcAnnualSavingsVal');
+    const currentAcosDisp = document.getElementById('calcCurrentAcosDisp');
+    const currentRoasDisp = document.getElementById('calcCurrentRoasDisp');
+    const currentWasteDisp = document.getElementById('calcCurrentWasteDisp');
+    const targetAcosDisp = document.getElementById('calcTargetAcosDisp');
+    const targetRoasDisp = document.getElementById('calcTargetRoasDisp');
+    const reinvestedSalesDisp = document.getElementById('calcReinvestedSalesDisp');
+    const insightText = document.getElementById('calcInsightText');
+    const effProductiveBar = document.getElementById('effProductiveBar');
+    const effWasteBar = document.getElementById('effWasteBar');
+    const efficiencyBreakdownLabel = document.getElementById('efficiencyBreakdownLabel');
+    const applyBtn = document.getElementById('calcApplyBtn');
+
+    let currentCurrency = '$';
+    let currentReduction = 0.32; // Benchmark: 32% ACoS reduction
+
+    function formatAmount(amount) {
+        return currentCurrency + Math.round(amount).toLocaleString('en-US');
+    }
+
+    function calculate() {
+        if (!spendInput || !acosInput) return;
+
+        let spend = parseFloat(spendInput.value);
+        if (isNaN(spend) || spend < 500) spend = 500;
+        if (spend > 500000) spend = 500000;
+
+        let acos = parseFloat(acosInput.value);
+        if (isNaN(acos) || acos < 5) acos = 5;
+        if (acos > 90) acos = 90;
+
+        // Metrics math
+        const targetAcos = Math.max(5, acos * (1 - currentReduction));
+        const currentRoas = 100 / acos;
+        const targetRoas = 100 / targetAcos;
+
+        // Sales generated from current ad spend
+        const currentSales = spend / (acos / 100);
+
+        // Required ad spend for the same sales volume at optimized ACoS
+        const optimizedSpendForSameSales = currentSales * (targetAcos / 100);
+
+        // Direct monthly ad spend savings
+        const monthlySavings = Math.max(0, spend - optimizedSpendForSameSales);
+        const annualSavings = monthlySavings * 12;
+
+        // Potential sales if full current ad budget is reinvested at new efficiency
+        const potentialScaledSales = spend / (targetAcos / 100);
+        const salesUpside = Math.max(0, potentialScaledSales - currentSales);
+
+        // Budget efficiency breakdown
+        const wastePct = Math.min(65, Math.max(18, Math.round((monthlySavings / spend) * 100)));
+        const productivePct = 100 - wastePct;
+
+        // Update DOM
+        if (monthlySavingsVal) {
+            monthlySavingsVal.textContent = formatAmount(monthlySavings);
+        }
+        if (annualSavingsVal) {
+            annualSavingsVal.textContent = formatAmount(annualSavings) + ' / year';
+        }
+        if (currentAcosDisp) {
+            currentAcosDisp.textContent = acos.toFixed(1) + '%';
+        }
+        if (currentRoasDisp) {
+            currentRoasDisp.textContent = currentRoas.toFixed(2) + 'x';
+        }
+        if (currentWasteDisp) {
+            currentWasteDisp.textContent = formatAmount(monthlySavings);
+        }
+        if (targetAcosDisp) {
+            targetAcosDisp.textContent = targetAcos.toFixed(1) + '%';
+        }
+        if (targetRoasDisp) {
+            targetRoasDisp.textContent = targetRoas.toFixed(2) + 'x';
+        }
+        if (reinvestedSalesDisp) {
+            reinvestedSalesDisp.textContent = '+' + formatAmount(salesUpside) + '/mo';
+        }
+        if (efficiencyBreakdownLabel) {
+            efficiencyBreakdownLabel.textContent = `${productivePct}% Productive · ${wastePct}% Recoverable Waste`;
+        }
+        if (effProductiveBar) {
+            effProductiveBar.style.width = productivePct + '%';
+        }
+        if (effWasteBar) {
+            effWasteBar.style.width = wastePct + '%';
+        }
+        if (insightText) {
+            insightText.innerHTML = `By lowering your ACoS from <strong>${acos.toFixed(1)}%</strong> to <strong>${targetAcos.toFixed(1)}%</strong>, you can either pocket <strong>${formatAmount(monthlySavings)}/mo</strong> in net savings or scale revenue to <strong>${formatAmount(potentialScaledSales)}/mo</strong> on the same ${formatAmount(spend)} budget.`;
+        }
+    }
+
+    // Synchronize spend input and range
+    if (spendRange && spendInput) {
+        spendRange.addEventListener('input', () => {
+            spendInput.value = spendRange.value;
+            syncSpendChips(parseFloat(spendRange.value));
+            calculate();
+        });
+
+        spendInput.addEventListener('input', () => {
+            const val = parseFloat(spendInput.value) || 1000;
+            spendRange.value = Math.min(150000, Math.max(1000, val));
+            syncSpendChips(val);
+            calculate();
+        });
+    }
+
+    function syncSpendChips(val) {
+        spendChips.forEach(chip => {
+            chip.classList.toggle('active', parseFloat(chip.dataset.spend) === val);
+        });
+    }
+
+    spendChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const val = parseFloat(chip.dataset.spend);
+            if (spendInput) spendInput.value = val;
+            if (spendRange) spendRange.value = Math.min(150000, val);
+            syncSpendChips(val);
+            calculate();
+        });
+    });
+
+    // Synchronize ACoS input and range
+    if (acosRange && acosInput) {
+        acosRange.addEventListener('input', () => {
+            acosInput.value = acosRange.value;
+            syncAcosChips(parseFloat(acosRange.value));
+            calculate();
+        });
+
+        acosInput.addEventListener('input', () => {
+            const val = parseFloat(acosInput.value) || 20;
+            acosRange.value = Math.min(65, Math.max(15, val));
+            syncAcosChips(val);
+            calculate();
+        });
+    }
+
+    function syncAcosChips(val) {
+        acosChips.forEach(chip => {
+            chip.classList.toggle('active', parseFloat(chip.dataset.acos) === val);
+        });
+    }
+
+    acosChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const val = parseFloat(chip.dataset.acos);
+            if (acosInput) acosInput.value = val;
+            if (acosRange) acosRange.value = val;
+            syncAcosChips(val);
+            calculate();
+        });
+    });
+
+    // Optimization Tiers
+    tierCards.forEach(card => {
+        card.addEventListener('click', () => {
+            tierCards.forEach(c => {
+                c.classList.remove('active');
+                c.setAttribute('aria-checked', 'false');
+            });
+            card.classList.add('active');
+            card.setAttribute('aria-checked', 'true');
+            currentReduction = parseFloat(card.dataset.reduction) || 0.32;
+            calculate();
+        });
+    });
+
+    // Currency Switcher
+    currButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            currButtons.forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
+            });
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+            currentCurrency = btn.dataset.curr || '$';
+            if (spendCurr) spendCurr.textContent = currentCurrency;
+
+            // Update preset labels
+            spendChips.forEach(chip => {
+                const sp = parseFloat(chip.dataset.spend);
+                chip.textContent = currentCurrency + (sp / 1000) + 'K';
+            });
+
+            calculate();
+        });
+    });
+
+    // Apply Button -> Smooth scroll & Pre-fill contact form
+    if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+            const spend = parseFloat(spendInput ? spendInput.value : 15000);
+            const acos = parseFloat(acosInput ? acosInput.value : 34);
+            const targetAcos = acos * (1 - currentReduction);
+            const monthlySavings = spend * (1 - targetAcos / acos);
+
+            // Pre-select PPC Management in Step 1
+            const serviceOptions = document.querySelectorAll('.service-select-option');
+            serviceOptions.forEach(opt => {
+                if (opt.dataset.service === 'PPC Management') {
+                    serviceOptions.forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                }
+            });
+
+            // Pre-fill challenge description
+            const challengeField = document.getElementById('inq-challenge');
+            if (challengeField) {
+                challengeField.value = `[ROI Calculator Projection]\nMonthly Amazon Ad Spend: ${formatAmount(spend)}\nCurrent Average ACoS: ${acos.toFixed(1)}%\nProjected Target ACoS: ${targetAcos.toFixed(1)}%\nEstimated Monthly Savings: ${formatAmount(monthlySavings)}\nProjected Annual Spend Saved: ${formatAmount(monthlySavings * 12)}\n\nLooking for a comprehensive PPC audit and negative search term analysis to unlock these efficiencies.`;
+            }
+
+            // Scroll to contact form
+            const contactSection = document.getElementById('contact');
+            if (contactSection) {
+                const headerOffset = 80;
+                const elementPosition = contactSection.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.scrollY - headerOffset;
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    }
+
+    // Initial calculation run
+    calculate();
+}
+
 // ─── INITIALIZE ALL ───────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     initCMSData();
@@ -952,6 +1206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initRings();
     initFAQ();
     initMultiStepForm();
+    initRoiCalculator();
     initToolBadges();
     initMagneticButtons();
     initWhatsApp();

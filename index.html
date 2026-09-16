@@ -74,6 +74,7 @@
                 <li><a href="#home" class="nav-link active" id="nav-home">Home</a></li>
                 <li><a href="#services" class="nav-link" id="nav-services">Services</a></li>
                 <li><a href="#results" class="nav-link" id="nav-results">Results</a></li>
+                <li><a href="#calculator" class="nav-link" id="nav-calc">ROI Calculator</a></li>
                 <li><a href="#case-studies" class="nav-link" id="nav-cases">Case Studies</a></li>
                 <li><a href="#process" class="nav-link" id="nav-process">Process</a></li>
                 <li><a href="#resources" class="nav-link" id="nav-resources">Resources</a></li>
@@ -101,6 +102,7 @@
             <li><a href="#home" class="mobile-link" id="mob-home">Home</a></li>
             <li><a href="#services" class="mobile-link" id="mob-services">Services</a></li>
             <li><a href="#results" class="mobile-link" id="mob-results">Results</a></li>
+            <li><a href="#calculator" class="mobile-link" id="mob-calc">ROI Calculator</a></li>
             <li><a href="#case-studies" class="mobile-link" id="mob-cases">Case Studies</a></li>
             <li><a href="#process" class="mobile-link" id="mob-process">Process</a></li>
             <li><a href="#resources" class="mobile-link" id="mob-resources">Resources</a></li>
@@ -577,7 +579,195 @@
         </div>
     </section>
 
-    <!-- ===== 7. CASE STUDIES ===== -->
+    <!-- ===== 7. ROI CALCULATOR SECTION ===== -->
+    <section id="calculator" class="section calc-section" aria-labelledby="calc-heading">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-label">Interactive ROI Calculator</span>
+                <h2 id="calc-heading" class="section-title">Calculate Your Potential Amazon PPC Savings &amp; ROI</h2>
+                <p class="section-sub">Estimate how much wasted ad spend you can eliminate and how much profit margin you can unlock with MAM SCALEVIO's structured Amazon advertising management.</p>
+            </div>
+
+            <div class="calc-grid">
+                <!-- Left Column: Interactive Inputs -->
+                <div class="calc-card calc-controls glass-card fade-up" id="calcControlsCard">
+                    <div class="calc-panel-header">
+                        <div class="calc-panel-title">
+                            <i class="fas fa-sliders" aria-hidden="true"></i>
+                            <span>Your Current Ad Metrics</span>
+                        </div>
+                        <div class="currency-selector" role="group" aria-label="Select currency">
+                            <button type="button" class="btn-currency active" data-curr="$" id="currUSD" aria-pressed="true">$ USD</button>
+                            <button type="button" class="btn-currency" data-curr="£" id="currGBP" aria-pressed="false">£ GBP</button>
+                            <button type="button" class="btn-currency" data-curr="€" id="currEUR" aria-pressed="false">€ EUR</button>
+                        </div>
+                    </div>
+
+                    <!-- Input 1: Monthly Amazon Ad Spend -->
+                    <div class="calc-input-group">
+                        <div class="calc-input-header">
+                            <label for="calcSpendInput" class="calc-label">Monthly Amazon Ad Spend</label>
+                            <div class="calc-val-box">
+                                <span class="calc-curr-symbol" id="calcSpendCurr">$</span>
+                                <input type="number" id="calcSpendInput" class="calc-number-input" min="1000" max="250000" step="500" value="15000" aria-label="Monthly ad spend">
+                            </div>
+                        </div>
+                        <input type="range" id="calcSpendRange" class="calc-range" min="1000" max="150000" step="500" value="15000" aria-label="Adjust monthly ad spend slider">
+                        <div class="calc-presets" role="group" aria-label="Quick spend presets">
+                            <button type="button" class="calc-chip" data-spend="5000" id="presetSpend5k">$5K</button>
+                            <button type="button" class="calc-chip active" data-spend="15000" id="presetSpend15k">$15K</button>
+                            <button type="button" class="calc-chip" data-spend="35000" id="presetSpend35k">$35K</button>
+                            <button type="button" class="calc-chip" data-spend="75000" id="presetSpend75k">$75K</button>
+                            <button type="button" class="calc-chip" data-spend="120000" id="presetSpend120k">$120K</button>
+                        </div>
+                    </div>
+
+                    <!-- Input 2: Current ACoS -->
+                    <div class="calc-input-group">
+                        <div class="calc-input-header">
+                            <label for="calcAcosInput" class="calc-label">Current Average ACoS (%)</label>
+                            <div class="calc-val-box">
+                                <input type="number" id="calcAcosInput" class="calc-number-input" min="12" max="75" step="0.5" value="34" aria-label="Current ACoS percentage">
+                                <span class="calc-unit">%</span>
+                            </div>
+                        </div>
+                        <input type="range" id="calcAcosRange" class="calc-range" min="15" max="65" step="1" value="34" aria-label="Adjust current ACoS slider">
+                        <div class="calc-presets" role="group" aria-label="Quick ACoS presets">
+                            <button type="button" class="calc-chip" data-acos="24" id="presetAcos24">24% (Moderate)</button>
+                            <button type="button" class="calc-chip active" data-acos="34" id="presetAcos34">34% (Typical)</button>
+                            <button type="button" class="calc-chip" data-acos="45" id="presetAcos45">45% (High)</button>
+                            <button type="button" class="calc-chip" data-acos="56" id="presetAcos56">56% (Bleeding)</button>
+                        </div>
+                    </div>
+
+                    <!-- Input 3: Target Optimization Tier -->
+                    <div class="calc-input-group">
+                        <label class="calc-label">Target Optimization Intensity</label>
+                        <div class="calc-tier-grid" role="radiogroup" aria-label="Target optimization efficiency level">
+                            <button type="button" class="calc-tier-card" data-reduction="0.20" id="tierConservative" role="radio" aria-checked="false">
+                                <span class="tier-name">Conservative</span>
+                                <span class="tier-drop">-20% ACoS</span>
+                                <span class="tier-desc">Baseline negative match harvesting</span>
+                            </button>
+                            <button type="button" class="calc-tier-card active" data-reduction="0.32" id="tierBenchmark" role="radio" aria-checked="true">
+                                <div class="tier-badge">MAM Avg</div>
+                                <span class="tier-name">Benchmark</span>
+                                <span class="tier-drop">-32% ACoS</span>
+                                <span class="tier-desc">Full bid curves, dayparting &amp; placement</span>
+                            </button>
+                            <button type="button" class="calc-tier-card" data-reduction="0.42" id="tierAggressive" role="radio" aria-checked="false">
+                                <span class="tier-name">Aggressive</span>
+                                <span class="tier-drop">-42% ACoS</span>
+                                <span class="tier-desc">Full structural campaign reboot</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Visual Efficiency Breakdown Bar -->
+                    <div class="calc-efficiency-bar-wrap">
+                        <div class="efficiency-bar-labels">
+                            <span>Estimated Budget Efficiency:</span>
+                            <span id="efficiencyBreakdownLabel">68% Productive &middot; 32% Recoverable Waste</span>
+                        </div>
+                        <div class="efficiency-bar" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100">
+                            <div class="eff-segment eff-productive" id="effProductiveBar" style="width: 68%;"></div>
+                            <div class="eff-segment eff-waste" id="effWasteBar" style="width: 32%;"></div>
+                        </div>
+                        <div class="efficiency-legend">
+                            <span class="eff-legend-item"><span class="eff-dot eff-dot-green"></span> Converting Keywords</span>
+                            <span class="eff-legend-item"><span class="eff-dot eff-dot-rose"></span> Recoverable Ad Bleed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Projected Results & Value Unlocked -->
+                <div class="calc-card calc-results glass-card fade-up" style="--delay:0.15s;" id="calcResultsCard">
+                    <div class="calc-results-top">
+                        <div class="calc-results-badge">
+                            <span class="badge-pulse" aria-hidden="true"></span>
+                            <span>Projected Efficiency Unlock</span>
+                        </div>
+                        <div class="calc-monthly-highlight">
+                            <span class="calc-highlight-sub">Estimated Monthly Ad Spend Savings</span>
+                            <div class="calc-highlight-num" id="calcMonthlySavingsVal">$4,800</div>
+                            <span class="calc-highlight-caption">Direct ad budget recovered through search term pruning &amp; bid precision</span>
+                        </div>
+                        <div class="calc-annual-banner">
+                            <div class="annual-icon"><i class="fas fa-piggy-bank" aria-hidden="true"></i></div>
+                            <div class="annual-text">
+                                <span class="annual-label">Projected Annual Spend Saved</span>
+                                <span class="annual-val" id="calcAnnualSavingsVal">$57,600 / year</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Matrix -->
+                    <div class="calc-comparison-grid">
+                        <!-- Before -->
+                        <div class="calc-comp-col comp-before">
+                            <div class="comp-col-header">
+                                <i class="fas fa-clock-rotate-left" aria-hidden="true"></i>
+                                <span>Current Baseline</span>
+                            </div>
+                            <div class="comp-metric">
+                                <span class="comp-metric-label">Average ACoS</span>
+                                <span class="comp-metric-val comp-val-muted" id="calcCurrentAcosDisp">34.0%</span>
+                            </div>
+                            <div class="comp-metric">
+                                <span class="comp-metric-label">Ad ROAS</span>
+                                <span class="comp-metric-val comp-val-muted" id="calcCurrentRoasDisp">2.94x</span>
+                            </div>
+                            <div class="comp-metric">
+                                <span class="comp-metric-label">Est. Ad Waste / Mo</span>
+                                <span class="comp-metric-val comp-val-rose" id="calcCurrentWasteDisp">$4,800</span>
+                            </div>
+                        </div>
+
+                        <!-- With MAM SCALEVIO -->
+                        <div class="calc-comp-col comp-after">
+                            <div class="comp-col-header comp-header-accent">
+                                <i class="fas fa-circle-check" aria-hidden="true"></i>
+                                <span>With MAM SCALEVIO</span>
+                            </div>
+                            <div class="comp-metric">
+                                <span class="comp-metric-label">Optimized Target ACoS</span>
+                                <span class="comp-metric-val comp-val-emerald" id="calcTargetAcosDisp">23.1%</span>
+                            </div>
+                            <div class="comp-metric">
+                                <span class="comp-metric-label">Projected Ad ROAS</span>
+                                <span class="comp-metric-val comp-val-emerald" id="calcTargetRoasDisp">4.33x</span>
+                            </div>
+                            <div class="comp-metric">
+                                <span class="comp-metric-label">Reinvested Sales Upside</span>
+                                <span class="comp-metric-val comp-val-cyan" id="calcReinvestedSalesDisp">+$20,779/mo</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Growth Summary Insight Box -->
+                    <div class="calc-insight-box">
+                        <i class="fas fa-chart-line" aria-hidden="true"></i>
+                        <p id="calcInsightText">
+                            By lowering your ACoS from <strong>34.0%</strong> to <strong>23.1%</strong>, you can either pocket <strong>$4,800/mo</strong> in net savings or scale sales to <strong>$64,883/mo</strong> on the same $15,000 budget.
+                        </p>
+                    </div>
+
+                    <!-- Primary Action Button -->
+                    <div class="calc-cta-wrap">
+                        <button type="button" class="btn btn-primary btn-block" id="calcApplyBtn">
+                            <span class="btn-shine" aria-hidden="true"></span>
+                            <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Get Free PPC Audit With These Numbers
+                        </button>
+                        <p class="calc-guarantee-note">
+                            <i class="fas fa-shield-check" aria-hidden="true"></i> 100% confidential &middot; Custom roadmap &middot; Includes negative search term &amp; ACoS audit
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 8. CASE STUDIES ===== -->
     <section id="case-studies" class="section" aria-labelledby="cases-heading">
         <div class="container">
             <div class="section-header text-center">

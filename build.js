@@ -46,7 +46,9 @@ function parseMarkdown(content) {
 function buildBlog() {
     if (!fs.existsSync(contentDir)) {
         console.log('Blog content directory does not exist.');
-        fs.writeFileSync(outputFile, JSON.stringify([]));
+        if (!fs.existsSync(outputFile)) {
+            fs.writeFileSync(outputFile, JSON.stringify([]));
+        }
         return;
     }
 
