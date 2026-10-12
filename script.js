@@ -393,7 +393,102 @@ function animateCounter(el, target, suffix, duration = 2000) {
     requestAnimationFrame(update);
 }
 
+// ─── HERO MINI-STAT COUNTER ANIMATION (GSAP + SCROLLTRIGGER) ───────────────────
+function initHeroMiniStatCounters() {
+    const statElements = document.querySelectorAll('.mini-stat-val');
+    if (!statElements.length) return;
+
+    // Parse each mini-stat's target and suffix
+    const stats = Array.from(statElements).map(el => {
+        let target = parseFloat(el.getAttribute('data-target'));
+        let suffix = el.getAttribute('data-suffix');
+
+        if (isNaN(target) || suffix === null) {
+            const rawText = el.textContent.trim();
+            const match = rawText.match(/^(\d+(?:\.\d+)?)(.*)$/);
+            if (match) {
+                target = parseFloat(match[1]);
+                suffix = match[2];
+            } else {
+                target = 0;
+                suffix = '';
+            }
+        }
+
+        // Initialize displayed value to 0
+        el.textContent = '0' + suffix;
+
+        return {
+            el,
+            target,
+            suffix,
+            proxy: { val: 0 }
+        };
+    });
+
+    const heroTrigger = document.getElementById('home') || document.querySelector('.hero') || document.querySelector('.hero-mini-stats');
+    let hasAnimated = false;
+
+    function triggerCountAnimation() {
+        if (hasAnimated) return;
+        hasAnimated = true;
+
+        if (typeof gsap !== 'undefined') {
+            stats.forEach((stat, index) => {
+                stat.proxy.val = 0;
+                gsap.to(stat.proxy, {
+                    val: stat.target,
+                    duration: 2.0,
+                    delay: 0.15 + (index * 0.12),
+                    ease: 'power2.out',
+                    onUpdate: () => {
+                        const current = Math.round(stat.proxy.val);
+                        stat.el.textContent = current + stat.suffix;
+                    },
+                    onComplete: () => {
+                        stat.el.textContent = stat.target + stat.suffix;
+                    }
+                });
+            });
+        } else {
+            // Fallback requestAnimationFrame counter if GSAP is not available
+            stats.forEach(stat => {
+                animateCounter(stat.el, stat.target, stat.suffix, 2000);
+            });
+        }
+    }
+
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+        ScrollTrigger.create({
+            trigger: heroTrigger,
+            start: 'top 85%',
+            once: true,
+            onEnter: triggerCountAnimation,
+            onEnterBack: triggerCountAnimation
+        });
+    } else if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    triggerCountAnimation();
+                    obs.disconnect();
+                }
+            });
+        }, { threshold: 0.1 });
+        if (heroTrigger) {
+            obs.observe(heroTrigger);
+        } else {
+            triggerCountAnimation();
+        }
+    } else {
+        triggerCountAnimation();
+    }
+}
+
 function initCounters() {
+    initHeroMiniStatCounters();
+
     const counterEls = document.querySelectorAll('.trust-val[data-target]');
     const obs = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -560,13 +655,201 @@ function initRevenueChart() {
 function initServices() {
     const tabButtons = document.querySelectorAll('.svc-tab-btn');
     const serviceCards = document.querySelectorAll('.service-card');
+    const searchInput = document.getElementById('servicesSearchInput');
+    const searchClear = document.getElementById('servicesSearchClear');
+    const countIndicator = document.getElementById('servicesCountIndicator');
+    const emptyState = document.getElementById('servicesEmptyState');
+    const emptyQuerySpan = document.getElementById('servicesEmptyQuery');
+    const resetBtn = document.getElementById('servicesResetBtn');
+    const chipBtns = document.querySelectorAll('.svc-chip-btn');
+    const totalServices = serviceCards.length;
 
-    if (tabButtons.length && serviceCards.length) {
+    let currentFilter = 'all';
+    let currentSearchTerm = '';
+
+    // Cache original card text and elements for clean highlight restoration
+    const cardData = Array.from(serviceCards).map(card => {
+        const titleEl = card.querySelector('h3');
+        const descEl = card.querySelector('p');
+        const badgeEl = card.querySelector('.service-category-badge');
+        const deliverableEls = Array.from(card.querySelectorAll('.service-deliverables li'));
+
+        return {
+            card,
+            category: card.dataset.category || '',
+            titleEl,
+            titleOriginal: titleEl ? titleEl.textContent : '',
+            descEl,
+            descOriginal: descEl ? descEl.textContent : '',
+            badgeEl,
+            badgeOriginal: badgeEl ? badgeEl.textContent : '',
+            deliverables: deliverableEls.map(li => {
+                // keep the icon element intact, save text content
+                const icon = li.querySelector('i');
+                const text = li.innerText.trim();
+                return { li, iconHtml: icon ? icon.outerHTML : '<i class="fas fa-check" aria-hidden="true"></i>', textOriginal: text };
+            })
+        };
+    });
+
+    // Helper to escape regex special characters
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // Helper to highlight matching terms inside text
+    function highlightText(text, term) {
+        if (!term) return text;
+        const regex = new RegExp(`(${escapeRegExp(term)})`, 'gi');
+        return text.replace(regex, '<mark class="svc-highlight">$1</mark>');
+    }
+
+    // Central Filter & Search evaluator
+    function applyFilterAndSearch(animate = true) {
+        const term = currentSearchTerm.trim().toLowerCase();
+        const words = term ? term.split(/\s+/).filter(Boolean) : [];
+        let matchCount = 0;
+        const visibleCards = [];
+
+        cardData.forEach(item => {
+            const { card, category, titleEl, titleOriginal, descEl, descOriginal, badgeEl, badgeOriginal, deliverables } = item;
+
+            // 1. Check Category match
+            const matchesCategory = currentFilter === 'all' || category === currentFilter;
+
+            // 2. Check Keyword Search match
+            let matchesSearch = true;
+            if (words.length > 0) {
+                const searchableCorpus = [
+                    titleOriginal,
+                    descOriginal,
+                    badgeOriginal,
+                    ...deliverables.map(d => d.textOriginal)
+                ].join(' ').toLowerCase();
+
+                // Every search word must match anywhere in the card's text
+                matchesSearch = words.every(word => searchableCorpus.includes(word));
+            }
+
+            const isVisible = matchesCategory && matchesSearch;
+
+            if (isVisible) {
+                card.classList.remove('is-hidden');
+                visibleCards.push(card);
+                matchCount++;
+
+                // Apply visual keyword highlights if a query exists
+                if (term) {
+                    if (titleEl) titleEl.innerHTML = highlightText(titleOriginal, term);
+                    if (descEl) descEl.innerHTML = highlightText(descOriginal, term);
+                    if (badgeEl) badgeEl.innerHTML = highlightText(badgeOriginal, term);
+                    deliverables.forEach(d => {
+                        d.li.innerHTML = `${d.iconHtml} ${highlightText(d.textOriginal, term)}`;
+                    });
+                } else {
+                    // Reset to original pure text
+                    if (titleEl) titleEl.textContent = titleOriginal;
+                    if (descEl) descEl.textContent = descOriginal;
+                    if (badgeEl) badgeEl.textContent = badgeOriginal;
+                    deliverables.forEach(d => {
+                        d.li.innerHTML = `${d.iconHtml} ${d.textOriginal}`;
+                    });
+                }
+            } else {
+                card.classList.add('is-hidden');
+            }
+        });
+
+        // Update counts in category tabs dynamically
+        updateCategoryTabCounts(term);
+
+        // Update count indicator
+        if (countIndicator) {
+            if (matchCount === totalServices && !term && currentFilter === 'all') {
+                countIndicator.textContent = `Showing all ${totalServices} services`;
+                countIndicator.classList.remove('filtered');
+            } else {
+                const filterLabel = currentFilter === 'all' ? '' : ` in ${getCategoryName(currentFilter)}`;
+                countIndicator.textContent = `Found ${matchCount} of ${totalServices} services${filterLabel}${term ? ` for "${currentSearchTerm.trim()}"` : ''}`;
+                countIndicator.classList.add('filtered');
+            }
+        }
+
+        // Toggle Empty State
+        if (emptyState) {
+            if (matchCount === 0) {
+                emptyState.style.display = 'block';
+                if (emptyQuerySpan) emptyQuerySpan.textContent = currentSearchTerm.trim() || getCategoryName(currentFilter);
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+
+        // Toggle clear search button
+        if (searchClear) {
+            searchClear.style.display = currentSearchTerm.length > 0 ? 'flex' : 'none';
+        }
+
+        // Update active chip state
+        chipBtns.forEach(chip => {
+            const chipVal = chip.dataset.query.toLowerCase();
+            chip.classList.toggle('active', term === chipVal);
+        });
+
+        // Trigger GSAP stagger animation on newly revealed cards
+        if (animate && window.gsap && visibleCards.length) {
+            gsap.fromTo(visibleCards, 
+                { opacity: 0, y: 15, scale: 0.98 },
+                { opacity: 1, y: 0, scale: 1, duration: 0.3, stagger: 0.025, ease: 'power2.out', clearProps: 'all' }
+            );
+        }
+    }
+
+    // Helper to get human friendly category label
+    function getCategoryName(cat) {
+        switch (cat) {
+            case 'amazon': return 'Amazon';
+            case 'web': return 'Web & E-Com';
+            case 'creative': return 'Creative & Video';
+            case 'operations': return 'Operations';
+            default: return 'All';
+        }
+    }
+
+    // Update tab counts based on current search term
+    function updateCategoryTabCounts(term) {
+        tabButtons.forEach(btn => {
+            const cat = btn.dataset.filter;
+            const countBadge = btn.querySelector('.svc-tab-count');
+            if (!countBadge) return;
+
+            let count = 0;
+            cardData.forEach(item => {
+                const matchesCat = cat === 'all' || item.category === cat;
+                let matchesSearch = true;
+                if (term) {
+                    const words = term.split(/\s+/).filter(Boolean);
+                    const searchableCorpus = [
+                        item.titleOriginal,
+                        item.descOriginal,
+                        item.badgeOriginal,
+                        ...item.deliverables.map(d => d.textOriginal)
+                    ].join(' ').toLowerCase();
+                    matchesSearch = words.every(word => searchableCorpus.includes(word));
+                }
+                if (matchesCat && matchesSearch) count++;
+            });
+
+            countBadge.textContent = count;
+        });
+    }
+
+    // Category Tab Button Events
+    if (tabButtons.length) {
         tabButtons.forEach(btn => {
             btn.addEventListener('click', () => {
-                const filter = btn.dataset.filter;
+                currentFilter = btn.dataset.filter || 'all';
 
-                // Update active tab state
                 tabButtons.forEach(b => {
                     b.classList.remove('active');
                     b.setAttribute('aria-selected', 'false');
@@ -574,26 +857,76 @@ function initServices() {
                 btn.classList.add('active');
                 btn.setAttribute('aria-selected', 'true');
 
-                // Filter cards with smooth presentation
-                const visibleCards = [];
-                serviceCards.forEach(card => {
-                    const category = card.dataset.category;
-                    const shouldShow = filter === 'all' || category === filter;
-                    if (shouldShow) {
-                        card.classList.remove('is-hidden');
-                        visibleCards.push(card);
-                    } else {
-                        card.classList.add('is-hidden');
-                    }
-                });
-
-                if (window.gsap && visibleCards.length) {
-                    gsap.fromTo(visibleCards, 
-                        { opacity: 0, y: 15, scale: 0.98 },
-                        { opacity: 1, y: 0, scale: 1, duration: 0.35, stagger: 0.03, ease: 'power2.out', clearProps: 'all' }
-                    );
-                }
+                applyFilterAndSearch(true);
             });
+        });
+    }
+
+    // Search Input Event
+    if (searchInput) {
+        let debounceTimer;
+        searchInput.addEventListener('input', (e) => {
+            currentSearchTerm = e.target.value;
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                applyFilterAndSearch(true);
+            }, 60);
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                currentSearchTerm = '';
+                applyFilterAndSearch(true);
+                searchInput.blur();
+            }
+        });
+    }
+
+    // Search Clear Button Event
+    if (searchClear) {
+        searchClear.addEventListener('click', () => {
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+            }
+            currentSearchTerm = '';
+            applyFilterAndSearch(true);
+        });
+    }
+
+    // Chip Suggestions Click
+    chipBtns.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const query = chip.dataset.query;
+            if (searchInput) {
+                if (currentSearchTerm.toLowerCase() === query.toLowerCase()) {
+                    searchInput.value = '';
+                    currentSearchTerm = '';
+                } else {
+                    searchInput.value = query;
+                    currentSearchTerm = query;
+                }
+                applyFilterAndSearch(true);
+                searchInput.focus();
+            }
+        });
+    });
+
+    // Reset Button in Empty State
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            if (searchInput) searchInput.value = '';
+            currentSearchTerm = '';
+            currentFilter = 'all';
+
+            tabButtons.forEach(b => {
+                const isAll = b.dataset.filter === 'all';
+                b.classList.toggle('active', isAll);
+                b.setAttribute('aria-selected', isAll ? 'true' : 'false');
+            });
+
+            applyFilterAndSearch(true);
         });
     }
 

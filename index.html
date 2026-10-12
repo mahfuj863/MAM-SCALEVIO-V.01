@@ -255,17 +255,17 @@
 
                 <div class="hero-mini-stats fade-up" role="list" aria-label="Key metrics">
                     <div class="mini-stat" role="listitem">
-                        <span class="mini-stat-val">10M+</span>
+                        <span class="mini-stat-val" data-target="10" data-suffix="M+">10M+</span>
                         <span class="mini-stat-label">Sales Supported</span>
                     </div>
                     <div class="mini-stat-divider" aria-hidden="true"></div>
                     <div class="mini-stat" role="listitem">
-                        <span class="mini-stat-val">500+</span>
+                        <span class="mini-stat-val" data-target="500" data-suffix="+">500+</span>
                         <span class="mini-stat-label">Listings Optimized</span>
                     </div>
                     <div class="mini-stat-divider" aria-hidden="true"></div>
                     <div class="mini-stat" role="listitem">
-                        <span class="mini-stat-val">6+</span>
+                        <span class="mini-stat-val" data-target="6" data-suffix="+">6+</span>
                         <span class="mini-stat-label">Marketplaces</span>
                     </div>
                 </div>
@@ -497,6 +497,37 @@
                     <span>VA &amp; Operations</span>
                     <span class="svc-tab-count">2</span>
                 </button>
+            </div>
+
+            <!-- Services Client-Side Search & Filter Bar -->
+            <div class="services-filter-toolbar" role="search" aria-label="Search and filter services">
+                <div class="services-search-wrapper">
+                    <i class="fas fa-magnifying-glass services-search-icon" aria-hidden="true"></i>
+                    <input 
+                        type="search" 
+                        id="servicesSearchInput" 
+                        class="services-search-input" 
+                        placeholder="Search services by keyword (e.g., PPC, TikTok, Shopify, SEO, 3D, FBA, VA)..." 
+                        aria-label="Filter services by keyword"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <button type="button" class="services-search-clear" id="servicesSearchClear" aria-label="Clear services search" style="display: none;">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="services-search-meta">
+                    <span class="services-count-indicator" id="servicesCountIndicator" aria-live="polite">Showing 16 of 16 services</span>
+                    <div class="services-keyword-chips" aria-label="Popular search keywords">
+                        <span class="chips-label">Popular:</span>
+                        <button type="button" class="svc-chip-btn" data-query="PPC">PPC</button>
+                        <button type="button" class="svc-chip-btn" data-query="Video Ads">Video Ads</button>
+                        <button type="button" class="svc-chip-btn" data-query="Shopify">Shopify</button>
+                        <button type="button" class="svc-chip-btn" data-query="A+ Content">A+ Content</button>
+                        <button type="button" class="svc-chip-btn" data-query="3D Animation">3D Animation</button>
+                        <button type="button" class="svc-chip-btn" data-query="VA">VA Support</button>
+                    </div>
+                </div>
             </div>
 
             <div class="services-grid" id="servicesGrid">
@@ -787,6 +818,23 @@
                     </ul>
                     <div class="service-cta"><a href="#contact" class="service-learn-more" style="color:#18D39E;" data-service="Reporting & Dashboards" id="svc-report-cta">Inquire Service <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
                 </article>
+            </div>
+
+            <!-- Empty State for Services Search & Filter -->
+            <div class="services-empty-state" id="servicesEmptyState" style="display: none;" role="status" aria-live="polite">
+                <div class="empty-state-icon">
+                    <i class="fas fa-search-minus" aria-hidden="true"></i>
+                </div>
+                <h3>No matching services found</h3>
+                <p>We couldn't find any services matching "<span id="servicesEmptyQuery"></span>". Try another keyword or browse all our core agency capabilities.</p>
+                <div class="empty-state-actions">
+                    <button type="button" class="btn btn-primary btn-sm" id="servicesResetBtn">
+                        <i class="fas fa-rotate-left" aria-hidden="true"></i> View All Services
+                    </button>
+                    <a href="#contact" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-headset" aria-hidden="true"></i> Inquire Custom Scope
+                    </a>
+                </div>
             </div>
         </div>
     </section>
