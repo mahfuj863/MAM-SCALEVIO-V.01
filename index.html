@@ -149,8 +149,8 @@
     <nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
         <div class="nav-inner">
             <a href="#home" class="nav-brand" aria-label="MAM SCALEVIO - Home">
-                <img src="mam scalevio logo .png" alt="MAM SCALEVIO Logo" class="nav-logo">
-                <span class="nav-brand-text">MAM SCALEVIO</span>
+                <img src="logo-transparent-sm.png" srcset="logo-transparent-sm.png 1x, logo-transparent.png 2x" alt="MAM SCALEVIO Logo" class="nav-logo" width="51" height="32">
+                <span class="nav-brand-text"><span class="brand-name-mam">MAM</span><span class="brand-name-scalevio">SCALEVIO</span></span>
             </a>
 
             <ul class="nav-links" id="navLinks" role="list">
@@ -160,6 +160,7 @@
                 <li><a href="#results" class="nav-link" id="nav-results">Results</a></li>
                 <li><a href="#calculator" class="nav-link" id="nav-calc">ROI Calculator</a></li>
                 <li><a href="#case-studies" class="nav-link" id="nav-cases">Case Studies</a></li>
+                <li><a href="#testimonials" class="nav-link" id="nav-testimonials">Testimonials</a></li>
                 <li><a href="#process" class="nav-link" id="nav-process">Process</a></li>
                 <li><a href="#resources" class="nav-link" id="nav-resources">Resources</a></li>
                 <li><a href="#contact" class="nav-link" id="nav-contact">Contact</a></li>
@@ -182,6 +183,15 @@
 
     <!-- ===== MOBILE MENU ===== -->
     <div class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Mobile navigation" aria-hidden="true">
+        <div class="mobile-menu-header">
+            <a href="#home" class="mobile-brand" aria-label="MAM SCALEVIO - Home">
+                <img src="logo-transparent-sm.png" srcset="logo-transparent-sm.png 1x, logo-transparent.png 2x" alt="MAM SCALEVIO Logo" class="mobile-logo" width="45" height="28">
+                <span class="nav-brand-text"><span class="brand-name-mam">MAM</span><span class="brand-name-scalevio">SCALEVIO</span></span>
+            </a>
+            <button class="mobile-close-btn" id="mobileCloseBtn" aria-label="Close navigation menu">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
         <ul class="mobile-nav-links" role="list">
             <li><a href="#home" class="mobile-link" id="mob-home">Home</a></li>
             <li><a href="#services" class="mobile-link" id="mob-services">Services</a></li>
@@ -189,6 +199,7 @@
             <li><a href="#results" class="mobile-link" id="mob-results">Results</a></li>
             <li><a href="#calculator" class="mobile-link" id="mob-calc">ROI Calculator</a></li>
             <li><a href="#case-studies" class="mobile-link" id="mob-cases">Case Studies</a></li>
+            <li><a href="#testimonials" class="mobile-link" id="mob-testimonials">Testimonials</a></li>
             <li><a href="#process" class="mobile-link" id="mob-process">Process</a></li>
             <li><a href="#resources" class="mobile-link" id="mob-resources">Resources</a></li>
             <li><a href="#contact" class="mobile-link" id="mob-contact">Contact</a></li>
@@ -517,7 +528,7 @@
                     </button>
                 </div>
                 <div class="services-search-meta">
-                    <span class="services-count-indicator" id="servicesCountIndicator" aria-live="polite">Showing 16 of 16 services</span>
+                    <span class="services-count-indicator" id="servicesCountIndicator" aria-live="polite">Showing 6 of 16 services</span>
                     <div class="services-keyword-chips" aria-label="Popular search keywords">
                         <span class="chips-label">Popular:</span>
                         <button type="button" class="svc-chip-btn" data-query="PPC">PPC</button>
@@ -640,7 +651,7 @@
                 </article>
 
                 <!-- 7. Dedicated E-Commerce VA Support (NEW) -->
-                <article class="service-card glass-card fade-up" id="service-va" data-category="operations" style="--delay:0.2s;">
+                <article class="service-card glass-card fade-up is-hidden" id="service-va" data-category="operations" style="--delay:0.2s;">
                     <div class="service-card-glow" style="--glow-color:rgba(24,211,158,0.1);" aria-hidden="true"></div>
                     <div class="service-card-top">
                         <div class="service-icon-wrap"><div class="service-icon" style="background:rgba(24,211,158,0.12);color:#18D39E;"><i class="fas fa-headset" aria-hidden="true"></i></div></div>
@@ -658,7 +669,7 @@
                 </article>
 
                 <!-- 8. Graphic Design & Brand Creative (NEW) -->
-                <article class="service-card glass-card fade-up" id="service-graphic" data-category="creative" style="--delay:0.2s;">
+                <article class="service-card glass-card fade-up is-hidden" id="service-graphic" data-category="creative" style="--delay:0.2s;">
                     <div class="service-card-glow" style="--glow-color:rgba(248,184,78,0.1);" aria-hidden="true"></div>
                     <div class="service-card-top">
                         <div class="service-icon-wrap"><div class="service-icon" style="background:rgba(248,184,78,0.12);color:#F8B84E;"><i class="fas fa-palette" aria-hidden="true"></i></div></div>
@@ -676,7 +687,7 @@
                 </article>
 
                 <!-- 9. Video Ads & UGC Production (NEW) -->
-                <article class="service-card glass-card fade-up" id="service-video-ads" data-category="creative" style="--delay:0.25s;">
+                <article class="service-card glass-card fade-up is-hidden" id="service-video-ads" data-category="creative" style="--delay:0.25s;">
                     <div class="service-card-glow" style="--glow-color:rgba(255,107,138,0.1);" aria-hidden="true"></div>
                     <div class="service-card-top">
                         <div class="service-icon-wrap"><div class="service-icon" style="background:rgba(255,107,138,0.12);color:#FF6B8A;"><i class="fas fa-clapperboard" aria-hidden="true"></i></div></div>
@@ -694,7 +705,7 @@
                 </article>
 
                 <!-- 10. Professional Video Editing (NEW) -->
-                <article class="service-card glass-card fade-up" id="service-video-editing" data-category="creative" style="--delay:0.3s;">
+                <article class="service-card glass-card fade-up is-hidden" id="service-video-editing" data-category="creative" style="--delay:0.3s;">
                     <div class="service-card-glow" style="--glow-color:rgba(168,85,247,0.1);" aria-hidden="true"></div>
                     <div class="service-card-top">
                         <div class="service-icon-wrap"><div class="service-icon" style="background:rgba(168,85,247,0.12);color:#A855F7;"><i class="fas fa-film" aria-hidden="true"></i></div></div>
@@ -712,7 +723,7 @@
                 </article>
 
                 <!-- 11. Motion Graphics & 3D Animation (NEW) -->
-                <article class="service-card glass-card fade-up" id="service-motion-graphics" data-category="creative" style="--delay:0.3s;">
+                <article class="service-card glass-card fade-up is-hidden" id="service-motion-graphics" data-category="creative" style="--delay:0.3s;">
                     <div class="service-card-glow" style="--glow-color:rgba(56,189,248,0.1);" aria-hidden="true"></div>
                     <div class="service-card-top">
                         <div class="service-icon-wrap"><div class="service-icon" style="background:rgba(56,189,248,0.12);color:#38bdf8;"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i></div></div>
@@ -730,7 +741,7 @@
                 </article>
 
                 <!-- 12. Corporate Video & Brand Storytelling (NEW) -->
-                <article class="service-card glass-card fade-up" id="service-corporate-video" data-category="creative" style="--delay:0.35s;">
+                <article class="service-card glass-card fade-up is-hidden" id="service-corporate-video" data-category="creative" style="--delay:0.35s;">
                     <div class="service-card-glow" style="--glow-color:rgba(234,179,8,0.1);" aria-hidden="true"></div>
                     <div class="service-card-top">
                         <div class="service-icon-wrap"><div class="service-icon" style="background:rgba(234,179,8,0.12);color:#EAB308;"><i class="fas fa-building" aria-hidden="true"></i></div></div>
@@ -748,7 +759,7 @@
                 </article>
 
                 <!-- 13. Inventory & Operational Planning -->
-                <article class="service-card glass-card fade-up" id="service-inventory" data-category="operations" style="--delay:0.25s;">
+                <article class="service-card glass-card fade-up is-hidden" id="service-inventory" data-category="operations" style="--delay:0.25s;">
                     <div class="service-card-glow" style="--glow-color:rgba(79,140,255,0.08);" aria-hidden="true"></div>
                     <div class="service-card-top">
                         <div class="service-icon-wrap"><div class="service-icon"><i class="fas fa-boxes-stacked" aria-hidden="true"></i></div></div>
@@ -766,7 +777,7 @@
                 </article>
 
                 <!-- 14. Marketplace Expansion Support -->
-                <article class="service-card glass-card fade-up" id="service-expansion" data-category="amazon" style="--delay:0.3s;">
+                <article class="service-card glass-card fade-up is-hidden" id="service-expansion" data-category="amazon" style="--delay:0.3s;">
                     <div class="service-card-glow" style="--glow-color:rgba(124,106,255,0.08);" aria-hidden="true"></div>
                     <div class="service-card-top">
                         <div class="service-icon-wrap"><div class="service-icon" style="background:rgba(124,106,255,0.1);color:#7C6AFF;"><i class="fas fa-earth-europe" aria-hidden="true"></i></div></div>
@@ -784,7 +795,7 @@
                 </article>
 
                 <!-- 15. Amazon Growth Audit -->
-                <article class="service-card glass-card fade-up" id="service-audit" data-category="amazon" style="--delay:0.35s;">
+                <article class="service-card glass-card fade-up is-hidden" id="service-audit" data-category="amazon" style="--delay:0.35s;">
                     <div class="service-card-glow" style="--glow-color:rgba(255,107,138,0.08);" aria-hidden="true"></div>
                     <div class="service-card-top">
                         <div class="service-icon-wrap"><div class="service-icon" style="background:rgba(255,107,138,0.1);color:#FF6B8A;"><i class="fas fa-magnifying-glass-chart" aria-hidden="true"></i></div></div>
@@ -802,7 +813,7 @@
                 </article>
 
                 <!-- 16. Reporting & Workflow Support -->
-                <article class="service-card glass-card fade-up" id="service-reporting" data-category="amazon" style="--delay:0.4s;">
+                <article class="service-card glass-card fade-up is-hidden" id="service-reporting" data-category="amazon" style="--delay:0.4s;">
                     <div class="service-card-glow" style="--glow-color:rgba(24,211,158,0.08);" aria-hidden="true"></div>
                     <div class="service-card-top">
                         <div class="service-icon-wrap"><div class="service-icon" style="background:rgba(24,211,158,0.1);color:#18D39E;"><i class="fas fa-chart-bar" aria-hidden="true"></i></div></div>
@@ -818,6 +829,21 @@
                     </ul>
                     <div class="service-cta"><a href="#contact" class="service-learn-more" style="color:#18D39E;" data-service="Reporting & Dashboards" id="svc-report-cta">Inquire Service <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
                 </article>
+            </div>
+
+            <!-- Services Load More / Expand Controls -->
+            <div class="services-load-more-wrap" id="servicesLoadMoreWrap">
+                <div class="services-load-progress-bar" id="servicesProgressBar" role="progressbar" aria-valuenow="6" aria-valuemin="0" aria-valuemax="16" aria-label="Services visible proportion">
+                    <div class="services-progress-fill" id="servicesProgressFill" style="width: 37.5%;"></div>
+                </div>
+                <div class="services-load-meta">
+                    <span class="services-load-count" id="servicesLoadCount">Showing <strong id="servicesVisibleCount">6</strong> of <strong id="servicesTotalCount">16</strong> services</span>
+                </div>
+                <button type="button" class="services-load-more-btn" id="servicesLoadMoreBtn" aria-expanded="false" aria-controls="servicesGrid">
+                    <span class="load-more-text">Load More Services</span>
+                    <span class="load-more-remaining" id="servicesRemainingBadge">(+10 more)</span>
+                    <i class="fas fa-chevron-down load-more-icon" aria-hidden="true"></i>
+                </button>
             </div>
 
             <!-- Empty State for Services Search & Filter -->
@@ -1575,7 +1601,328 @@
         </div>
     </section>
 
-    <!-- ===== 8. CLIENT PORTAL PREVIEW ===== -->
+    <!-- ===== 9. CLIENT TESTIMONIALS & SOCIAL PROOF ===== -->
+    <section id="testimonials" class="section testimonials-section" aria-labelledby="testimonials-heading">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-label"><i class="fas fa-quote-left" style="color:var(--primary);margin-right:6px;" aria-hidden="true"></i>Client Proof &amp; Reviews</span>
+                <h2 id="testimonials-heading" class="section-title">Verified Client Success Stories</h2>
+                <p class="section-sub">Real results from ambitious Amazon brand owners, multi-marketplace operators, and agency partners scaling with MAM SCALEVIO.</p>
+            </div>
+
+            <!-- Social Proof Aggregate Bar -->
+            <div class="testimonials-trust-bar glass-card fade-up">
+                <div class="trust-stat-box">
+                    <div class="trust-stat-val"><span class="highlight-stat">4.9</span><span class="trust-stat-max">/5</span></div>
+                    <div class="trust-stat-stars" aria-label="5 out of 5 stars">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                    </div>
+                    <span class="trust-stat-lbl">100+ Verified Client Reviews</span>
+                </div>
+                <div class="trust-bar-divider" aria-hidden="true"></div>
+                <div class="trust-stat-box">
+                    <div class="trust-stat-val text-cyan">98.2%</div>
+                    <span class="trust-stat-sub">Client Retention</span>
+                    <span class="trust-stat-lbl">Long-Term Growth Partnerships</span>
+                </div>
+                <div class="trust-bar-divider" aria-hidden="true"></div>
+                <div class="trust-stat-box">
+                    <div class="trust-stat-val text-green">-34%</div>
+                    <span class="trust-stat-sub">Average ACoS Drop</span>
+                    <span class="trust-stat-lbl">First 90-Day PPC Optimization</span>
+                </div>
+                <div class="trust-bar-divider" aria-hidden="true"></div>
+                <div class="trust-stat-box">
+                    <div class="trust-stat-val text-gold">$48M+</div>
+                    <span class="trust-stat-sub">Managed Revenue</span>
+                    <span class="trust-stat-lbl">Across EU, UK &amp; US Markets</span>
+                </div>
+            </div>
+
+            <!-- Slider Header Controls & Filters -->
+            <div class="testimonials-controls-row">
+                <div class="testimonials-filters" role="tablist" aria-label="Filter testimonials by category">
+                    <button class="t-filter-btn active" data-filter="all" role="tab" aria-selected="true">All Stories</button>
+                    <button class="t-filter-btn" data-filter="amazon" role="tab" aria-selected="false">Amazon &amp; PPC</button>
+                    <button class="t-filter-btn" data-filter="expansion" role="tab" aria-selected="false">Marketplace Expansion</button>
+                    <button class="t-filter-btn" data-filter="creative" role="tab" aria-selected="false">Creative &amp; Video</button>
+                    <button class="t-filter-btn" data-filter="ops" role="tab" aria-selected="false">Operations &amp; VA</button>
+                </div>
+
+                <div class="testimonials-nav-btns" aria-label="Slider navigation controls">
+                    <button class="t-nav-btn" id="tPrevBtn" aria-label="Previous testimonial">
+                        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <div class="t-slide-indicator" id="tSlideIndicator" aria-live="polite">
+                        <span id="tCurrentSlide">1</span> / <span id="tTotalSlides">6</span>
+                    </div>
+                    <button class="t-nav-btn" id="tNextBtn" aria-label="Next testimonial">
+                        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                    </button>
+                    <button class="t-autoplay-btn" id="tAutoplayBtn" aria-label="Toggle autoplay" title="Pause / Resume slider auto-scroll">
+                        <i class="fas fa-pause" id="tAutoplayIcon" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Horizontal Slider Carousel -->
+            <div class="testimonials-slider-wrapper" id="testimonialsSliderWrapper">
+                <div class="testimonials-slider-track" id="testimonialsSliderTrack" role="region" aria-roledescription="carousel" aria-label="Client success stories slider" tabindex="0">
+                    
+                    <!-- Card 1: Nordic Peak Wellness -->
+                    <article class="testimonial-card glass-card fade-up" data-category="amazon" role="group" aria-roledescription="slide" aria-label="1 of 6: Nordic Peak Wellness">
+                        <div class="t-accent-top" style="background:linear-gradient(90deg, #4F8CFF, #7C6AFF);" aria-hidden="true"></div>
+                        <div class="t-card-header">
+                            <div class="t-stars" aria-label="5 stars">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                            </div>
+                            <span class="t-verified-badge"><i class="fas fa-check-circle" aria-hidden="true"></i> Verified Client</span>
+                        </div>
+                        <div class="t-metric-badge" style="border-color:rgba(79,140,255,0.3); background:rgba(79,140,255,0.08); color:#7cb1ff;">
+                            <i class="fas fa-arrow-trend-up" aria-hidden="true"></i>
+                            <strong>+145% Revenue</strong>
+                            <span class="t-metric-sep">&middot;</span>
+                            <span>-42% ACoS in 90 Days</span>
+                        </div>
+                        <div class="t-quote-box">
+                            <i class="fas fa-quote-left t-quote-icon" aria-hidden="true"></i>
+                            <blockquote class="t-quote-text">
+                                &ldquo;MAM SCALEVIO completely turned our Amazon UK &amp; DE performance around. In just 90 days, our ACoS dropped from 39% down to 22.4% while revenue doubled. Their structured campaign architecture and weekly reports gave our executive board total peace of mind.&rdquo;
+                            </blockquote>
+                        </div>
+                        <div class="t-scope-tag">
+                            <i class="fab fa-amazon" aria-hidden="true"></i> Amazon UK &amp; Germany &middot; PPC &amp; Catalog Management
+                        </div>
+                        <div class="t-author-row">
+                            <div class="t-avatar" style="background:linear-gradient(135deg,#4F8CFF,#7C6AFF);">LH</div>
+                            <div class="t-author-meta">
+                                <div class="t-author-name">Liam Henderson</div>
+                                <div class="t-author-title">Founder &amp; CEO, <span class="t-brand-highlight">Nordic Peak Wellness</span></div>
+                                <div class="t-author-loc"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> London, UK &middot; Health &amp; Supplements</div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 2: Lumina Living Goods -->
+                    <article class="testimonial-card glass-card fade-up" data-category="expansion" role="group" aria-roledescription="slide" aria-label="2 of 6: Lumina Living Goods" style="--delay:0.1s;">
+                        <div class="t-accent-top" style="background:linear-gradient(90deg, #18D39E, #4F8CFF);" aria-hidden="true"></div>
+                        <div class="t-card-header">
+                            <div class="t-stars" aria-label="5 stars">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                            </div>
+                            <span class="t-verified-badge" style="background:rgba(24,211,158,0.12); color:#18D39E; border-color:rgba(24,211,158,0.25);"><i class="fas fa-check-circle" aria-hidden="true"></i> Verified Client</span>
+                        </div>
+                        <div class="t-metric-badge" style="border-color:rgba(24,211,158,0.3); background:rgba(24,211,158,0.08); color:#18D39E;">
+                            <i class="fas fa-globe-europe" aria-hidden="true"></i>
+                            <strong>6 Markets Launched</strong>
+                            <span class="t-metric-sep">&middot;</span>
+                            <span>$180k/mo Pan-EU GMV</span>
+                        </div>
+                        <div class="t-quote-box">
+                            <i class="fas fa-quote-left t-quote-icon" aria-hidden="true"></i>
+                            <blockquote class="t-quote-text">
+                                &ldquo;Expanding from the US into Germany, France, Italy, and Spain was daunting until MAM SCALEVIO took charge. They localized 45+ listings with native German &amp; French A+ Content and launched ads that turned profitable in month one.&rdquo;
+                            </blockquote>
+                        </div>
+                        <div class="t-scope-tag">
+                            <i class="fas fa-layer-group" aria-hidden="true"></i> Pan-EU FBA Expansion &middot; A+ Content &amp; SEO
+                        </div>
+                        <div class="t-author-row">
+                            <div class="t-avatar" style="background:linear-gradient(135deg,#18D39E,#4F8CFF);">ER</div>
+                            <div class="t-author-meta">
+                                <div class="t-author-name">Elena Rostova</div>
+                                <div class="t-author-title">Head of Global E-Commerce, <span class="t-brand-highlight">Lumina Living Goods</span></div>
+                                <div class="t-author-loc"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Munich, Germany &middot; Home &amp; Kitchen</div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 3: Verve Audio Tech -->
+                    <article class="testimonial-card glass-card fade-up" data-category="creative" role="group" aria-roledescription="slide" aria-label="3 of 6: Verve Audio Tech" style="--delay:0.2s;">
+                        <div class="t-accent-top" style="background:linear-gradient(90deg, #F8B84E, #FF6B8A);" aria-hidden="true"></div>
+                        <div class="t-card-header">
+                            <div class="t-stars" aria-label="5 stars">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                            </div>
+                            <span class="t-verified-badge" style="background:rgba(248,184,78,0.12); color:#F8B84E; border-color:rgba(248,184,78,0.25);"><i class="fas fa-check-circle" aria-hidden="true"></i> Verified Client</span>
+                        </div>
+                        <div class="t-metric-badge" style="border-color:rgba(248,184,78,0.3); background:rgba(248,184,78,0.08); color:#f9c36b;">
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                            <strong>+64% Video CTR</strong>
+                            <span class="t-metric-sep">&middot;</span>
+                            <span>3.8x Blended ROAS</span>
+                        </div>
+                        <div class="t-quote-box">
+                            <i class="fas fa-quote-left t-quote-icon" aria-hidden="true"></i>
+                            <blockquote class="t-quote-text">
+                                &ldquo;Their video ads and 3D motion graphics team produced high-converting Amazon Sponsored Brand video ads and TikTok creatives. Their custom Shopify storefront also gave our off-Amazon direct sales a massive 28% boost.&rdquo;
+                            </blockquote>
+                        </div>
+                        <div class="t-scope-tag">
+                            <i class="fas fa-video" aria-hidden="true"></i> Video Ads, Motion Graphics &amp; Custom Web Dev
+                        </div>
+                        <div class="t-author-row">
+                            <div class="t-avatar" style="background:linear-gradient(135deg,#F8B84E,#FF6B8A);">MV</div>
+                            <div class="t-author-meta">
+                                <div class="t-author-name">Marcus Vance</div>
+                                <div class="t-author-title">Co-Founder &amp; CMO, <span class="t-brand-highlight">Verve Audio Tech</span></div>
+                                <div class="t-author-loc"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Austin, TX, USA &middot; Consumer Tech</div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 4: VitaGlow Organics -->
+                    <article class="testimonial-card glass-card fade-up" data-category="ops" role="group" aria-roledescription="slide" aria-label="4 of 6: VitaGlow Organics" style="--delay:0.3s;">
+                        <div class="t-accent-top" style="background:linear-gradient(90deg, #7C6AFF, #18D39E);" aria-hidden="true"></div>
+                        <div class="t-card-header">
+                            <div class="t-stars" aria-label="5 stars">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                            </div>
+                            <span class="t-verified-badge"><i class="fas fa-check-circle" aria-hidden="true"></i> Verified Client</span>
+                        </div>
+                        <div class="t-metric-badge" style="border-color:rgba(124,106,255,0.3); background:rgba(124,106,255,0.08); color:#a294ff;">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            <strong>30+ Hrs/Wk Saved</strong>
+                            <span class="t-metric-sep">&middot;</span>
+                            <span>100% Account Health Score</span>
+                        </div>
+                        <div class="t-quote-box">
+                            <i class="fas fa-quote-left t-quote-icon" aria-hidden="true"></i>
+                            <blockquote class="t-quote-text">
+                                &ldquo;Having a dedicated MAM SCALEVIO e-commerce VA handle our daily Seller Central operations, inventory reconciliations, and case management was a total game-changer. Zero stock-outs through Q4 peak season.&rdquo;
+                            </blockquote>
+                        </div>
+                        <div class="t-scope-tag">
+                            <i class="fas fa-headset" aria-hidden="true"></i> Dedicated Amazon VA &amp; Operations Support
+                        </div>
+                        <div class="t-author-row">
+                            <div class="t-avatar" style="background:linear-gradient(135deg,#7C6AFF,#18D39E);">SJ</div>
+                            <div class="t-author-meta">
+                                <div class="t-author-name">Sarah Jenkins</div>
+                                <div class="t-author-title">Operations Director, <span class="t-brand-highlight">VitaGlow Organics</span></div>
+                                <div class="t-author-loc"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Manchester, UK &middot; Skincare &amp; Cosmetics</div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 5: Moreau Sport & Apparel -->
+                    <article class="testimonial-card glass-card fade-up" data-category="amazon" role="group" aria-roledescription="slide" aria-label="5 of 6: Moreau Sport & Apparel" style="--delay:0.4s;">
+                        <div class="t-accent-top" style="background:linear-gradient(90deg, #4F8CFF, #18D39E);" aria-hidden="true"></div>
+                        <div class="t-card-header">
+                            <div class="t-stars" aria-label="5 stars">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                            </div>
+                            <span class="t-verified-badge"><i class="fas fa-check-circle" aria-hidden="true"></i> Verified Client</span>
+                        </div>
+                        <div class="t-metric-badge" style="border-color:rgba(79,140,255,0.3); background:rgba(79,140,255,0.08); color:#7cb1ff;">
+                            <i class="fas fa-bullseye" aria-hidden="true"></i>
+                            <strong>+38% Net Margin</strong>
+                            <span class="t-metric-sep">&middot;</span>
+                            <span>3.2x Campaign ROAS</span>
+                        </div>
+                        <div class="t-quote-box">
+                            <i class="fas fa-quote-left t-quote-icon" aria-hidden="true"></i>
+                            <blockquote class="t-quote-text">
+                                &ldquo;The initial PPC audit was eye-opening. They identified thousands in wasted keywords and negative match bleed. Within weeks of their bid optimization and listing copywriting overhaul, our profitability turned positive.&rdquo;
+                            </blockquote>
+                        </div>
+                        <div class="t-scope-tag">
+                            <i class="fab fa-amazon" aria-hidden="true"></i> Amazon France &amp; Spain &middot; Listing SEO &amp; PPC
+                        </div>
+                        <div class="t-author-row">
+                            <div class="t-avatar" style="background:linear-gradient(135deg,#4F8CFF,#18D39E);">DM</div>
+                            <div class="t-author-meta">
+                                <div class="t-author-name">David Moreau</div>
+                                <div class="t-author-title">Managing Director, <span class="t-brand-highlight">Moreau Sport &amp; Apparel</span></div>
+                                <div class="t-author-loc"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Lyon, France &middot; Apparel &amp; Athleisure</div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 6: Apex Outdoor Gear -->
+                    <article class="testimonial-card glass-card fade-up" data-category="ops" role="group" aria-roledescription="slide" aria-label="6 of 6: Apex Outdoor Gear" style="--delay:0.5s;">
+                        <div class="t-accent-top" style="background:linear-gradient(90deg, #FF6B8A, #7C6AFF);" aria-hidden="true"></div>
+                        <div class="t-card-header">
+                            <div class="t-stars" aria-label="5 stars">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                            </div>
+                            <span class="t-verified-badge"><i class="fas fa-check-circle" aria-hidden="true"></i> Verified Client</span>
+                        </div>
+                        <div class="t-metric-badge" style="border-color:rgba(255,107,138,0.3); background:rgba(255,107,138,0.08); color:#ff92a9;">
+                            <i class="fas fa-trophy" aria-hidden="true"></i>
+                            <strong>+52% Organic Rank</strong>
+                            <span class="t-metric-sep">&middot;</span>
+                            <span>$2.4M Annual GMV</span>
+                        </div>
+                        <div class="t-quote-box">
+                            <i class="fas fa-quote-left t-quote-icon" aria-hidden="true"></i>
+                            <blockquote class="t-quote-text">
+                                &ldquo;MAM SCALEVIO operates like an embedded extension of our team. Their proactive communication, weekly video breakdowns, and relentless testing culture helped us scale past $2M on Amazon while building our wholesale portal.&rdquo;
+                            </blockquote>
+                        </div>
+                        <div class="t-scope-tag">
+                            <i class="fas fa-rocket" aria-hidden="true"></i> Full Account Management &amp; B2B Portal
+                        </div>
+                        <div class="t-author-row">
+                            <div class="t-avatar" style="background:linear-gradient(135deg,#FF6B8A,#7C6AFF);">JW</div>
+                            <div class="t-author-meta">
+                                <div class="t-author-name">Jessica Wu</div>
+                                <div class="t-author-title">VP of E-Commerce, <span class="t-brand-highlight">Apex Outdoor Gear</span></div>
+                                <div class="t-author-loc"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Seattle, WA, USA &middot; Outdoor &amp; Camping</div>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+
+            <!-- Dots Pagination -->
+            <div class="testimonials-dots" id="testimonialsDots" role="tablist" aria-label="Testimonial slider pagination"></div>
+
+            <!-- Bottom CTA Banner in Testimonials -->
+            <div class="testimonials-cta-strip glass-card fade-up">
+                <div class="t-cta-content">
+                    <span class="t-cta-badge"><i class="fas fa-bolt" aria-hidden="true"></i> Start Your Growth Sprint</span>
+                    <h3 class="t-cta-title">Ready to write your brand's next success story?</h3>
+                    <p class="t-cta-desc">Get a confidential Amazon listing &amp; PPC audit or schedule a 1-on-1 strategy call with our marketplace team.</p>
+                </div>
+                <div class="t-cta-actions">
+                    <a href="#contact" class="btn-primary"><i class="fas fa-calendar-alt" aria-hidden="true"></i> Book Strategy Call</a>
+                    <a href="#contact" class="btn-secondary">Request Free Audit <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 10. CLIENT PORTAL PREVIEW ===== -->
     <section id="portal" class="section portal-section" aria-labelledby="portal-heading">
         <div class="container">
             <div class="portal-inner">
@@ -2073,8 +2420,8 @@
                 <div class="footer-grid">
                     <div class="footer-col footer-brand-col">
                         <div class="footer-brand">
-                            <img src="mam scalevio logo .png" alt="MAM SCALEVIO" class="footer-logo">
-                            <span class="footer-brand-name">MAM SCALEVIO</span>
+                            <img src="logo-transparent-sm.png" srcset="logo-transparent-sm.png 1x, logo-transparent.png 2x" alt="MAM SCALEVIO" class="footer-logo" width="51" height="32">
+                            <span class="footer-brand-name"><span class="brand-name-mam">MAM</span><span class="brand-name-scalevio">SCALEVIO</span></span>
                         </div>
                         <p class="footer-brand-desc">Amazon FBA Growth &amp; Marketplace Management Partner. Structured Amazon support for ambitious e-commerce brands across EU and global marketplaces.</p>
                         <div class="footer-social" aria-label="Social media links">
@@ -2088,6 +2435,7 @@
                             <li><a href="#services">Services</a></li>
                             <li><a href="#results">Results</a></li>
                             <li><a href="#case-studies">Case Studies</a></li>
+                            <li><a href="#testimonials">Testimonials</a></li>
                             <li><a href="#process">Process</a></li>
                             <li><a href="#resources">Resources</a></li>
                             <li><a href="#faq">FAQ</a></li>

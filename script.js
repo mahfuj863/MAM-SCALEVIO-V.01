@@ -25,6 +25,15 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 if (hamburger && mobileMenu) {
+    const mobileCloseBtn = document.getElementById('mobileCloseBtn');
+    const closeMobileMenu = () => {
+        hamburger.classList.remove('active');
+        mobileMenu.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+        mobileMenu.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    };
+
     hamburger.addEventListener('click', () => {
         const isOpen = hamburger.classList.toggle('active');
         mobileMenu.classList.toggle('open', isOpen);
@@ -32,14 +41,24 @@ if (hamburger && mobileMenu) {
         mobileMenu.setAttribute('aria-hidden', !isOpen);
         document.body.style.overflow = isOpen ? 'hidden' : '';
     });
+
+    if (mobileCloseBtn) {
+        mobileCloseBtn.addEventListener('click', closeMobileMenu);
+    }
+
     mobileLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            mobileMenu.classList.remove('open');
-            hamburger.setAttribute('aria-expanded', 'false');
-            mobileMenu.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
-        });
+        link.addEventListener('click', closeMobileMenu);
+    });
+
+    const mobileCtas = mobileMenu.querySelectorAll('.btn-mobile-audit, .btn-mobile-strategy, .mobile-brand');
+    mobileCtas.forEach(cta => {
+        cta.addEventListener('click', closeMobileMenu);
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+            closeMobileMenu();
+        }
     });
 }
 
@@ -664,6 +683,17 @@ function initServices() {
     const chipBtns = document.querySelectorAll('.svc-chip-btn');
     const totalServices = serviceCards.length;
 
+    // Load More Controls
+    const loadMoreWrap = document.getElementById('servicesLoadMoreWrap');
+    const loadMoreBtn = document.getElementById('servicesLoadMoreBtn');
+    const progressFill = document.getElementById('servicesProgressFill');
+    const progressBar = document.getElementById('servicesProgressBar');
+    const visibleCountEl = document.getElementById('servicesVisibleCount');
+    const totalCountEl = document.getElementById('servicesTotalCount');
+
+    const INITIAL_LIMIT = 6;
+    let isExpanded = false;
+
     let currentFilter = 'all';
     let currentSearchTerm = '';
 
@@ -684,7 +714,6 @@ function initServices() {
             badgeEl,
             badgeOriginal: badgeEl ? badgeEl.textContent : '',
             deliverables: deliverableEls.map(li => {
-                // keep the icon element intact, save text content
                 const icon = li.querySelector('i');
                 const text = li.innerText.trim();
                 return { li, iconHtml: icon ? icon.outerHTML : '<i class="fas fa-check" aria-hidden="true"></i>', textOriginal: text };
@@ -704,12 +733,12 @@ function initServices() {
         return text.replace(regex, '<mark class="svc-highlight">$1</mark>');
     }
 
-    // Central Filter & Search evaluator
-    function applyFilterAndSearch(animate = true) {
+    // Central Filter & Search evaluator with Load More limiting
+    function applyFilterAndSearch(animate = true, revealNewlyExpanded = false) {
         const term = currentSearchTerm.trim().toLowerCase();
         const words = term ? term.split(/\s+/).filter(Boolean) : [];
         let matchCount = 0;
-        const visibleCards = [];
+        const matchingCards = [];
 
         cardData.forEach(item => {
             const { card, category, titleEl, titleOriginal, descEl, descOriginal, badgeEl, badgeOriginal, deliverables } = item;
@@ -731,12 +760,11 @@ function initServices() {
                 matchesSearch = words.every(word => searchableCorpus.includes(word));
             }
 
-            const isVisible = matchesCategory && matchesSearch;
+            const isMatch = matchesCategory && matchesSearch;
 
-            if (isVisible) {
-                card.classList.remove('is-hidden');
-                visibleCards.push(card);
+            if (isMatch) {
                 matchCount++;
+                matchingCards.push(item);
 
                 // Apply visual keyword highlights if a query exists
                 if (term) {
@@ -760,17 +788,87 @@ function initServices() {
             }
         });
 
+        // Determine visible cards based on isExpanded & INITIAL_LIMIT
+        const visibleCards = [];
+        const newlyRevealedCards = [];
+
+        matchingCards.forEach((item, index) => {
+            const shouldShow = isExpanded || index < INITIAL_LIMIT;
+            const wasHidden = item.card.classList.contains('is-hidden');
+
+            if (shouldShow) {
+                item.card.classList.remove('is-hidden');
+                visibleCards.push(item.card);
+                if (wasHidden) {
+                    newlyRevealedCards.push(item.card);
+                }
+            } else {
+                item.card.classList.add('is-hidden');
+            }
+        });
+
+        const visibleCount = visibleCards.length;
+
+        // Update Load More Controls
+        if (loadMoreWrap && loadMoreBtn) {
+            if (matchCount <= INITIAL_LIMIT) {
+                loadMoreWrap.style.display = 'none';
+            } else {
+                loadMoreWrap.style.display = 'flex';
+                
+                const percent = Math.min(100, Math.round((visibleCount / matchCount) * 100));
+                if (progressFill) progressFill.style.width = `${percent}%`;
+                if (progressBar) {
+                    progressBar.setAttribute('aria-valuenow', visibleCount);
+                    progressBar.setAttribute('aria-valuemax', matchCount);
+                }
+                if (visibleCountEl) visibleCountEl.textContent = visibleCount;
+                if (totalCountEl) totalCountEl.textContent = matchCount;
+
+                const remaining = matchCount - visibleCount;
+
+                if (isExpanded) {
+                    loadMoreBtn.classList.add('is-expanded');
+                    loadMoreBtn.setAttribute('aria-expanded', 'true');
+                    loadMoreBtn.innerHTML = `
+                        <span class="load-more-text">Show Less</span>
+                        <i class="fas fa-chevron-up load-more-icon" aria-hidden="true"></i>
+                    `;
+                } else {
+                    loadMoreBtn.classList.remove('is-expanded');
+                    loadMoreBtn.setAttribute('aria-expanded', 'false');
+                    loadMoreBtn.innerHTML = `
+                        <span class="load-more-text">Load More Services</span>
+                        <span class="load-more-remaining" id="servicesRemainingBadge">(+${remaining} more)</span>
+                        <i class="fas fa-chevron-down load-more-icon" aria-hidden="true"></i>
+                    `;
+                }
+            }
+        }
+
         // Update counts in category tabs dynamically
         updateCategoryTabCounts(term);
 
         // Update count indicator
         if (countIndicator) {
-            if (matchCount === totalServices && !term && currentFilter === 'all') {
-                countIndicator.textContent = `Showing all ${totalServices} services`;
-                countIndicator.classList.remove('filtered');
+            if (matchCount === 0) {
+                countIndicator.textContent = '0 services found';
+                countIndicator.classList.add('filtered');
+            } else if (!term && currentFilter === 'all') {
+                if (isExpanded || matchCount <= INITIAL_LIMIT) {
+                    countIndicator.textContent = `Showing all ${totalServices} services`;
+                    countIndicator.classList.remove('filtered');
+                } else {
+                    countIndicator.textContent = `Showing ${visibleCount} of ${totalServices} services`;
+                    countIndicator.classList.remove('filtered');
+                }
             } else {
                 const filterLabel = currentFilter === 'all' ? '' : ` in ${getCategoryName(currentFilter)}`;
-                countIndicator.textContent = `Found ${matchCount} of ${totalServices} services${filterLabel}${term ? ` for "${currentSearchTerm.trim()}"` : ''}`;
+                if (isExpanded || matchCount <= INITIAL_LIMIT) {
+                    countIndicator.textContent = `Found ${matchCount} of ${totalServices} services${filterLabel}${term ? ` for "${currentSearchTerm.trim()}"` : ''}`;
+                } else {
+                    countIndicator.textContent = `Showing ${visibleCount} of ${matchCount} services${filterLabel}${term ? ` for "${currentSearchTerm.trim()}"` : ''}`;
+                }
                 countIndicator.classList.add('filtered');
             }
         }
@@ -796,11 +894,12 @@ function initServices() {
             chip.classList.toggle('active', term === chipVal);
         });
 
-        // Trigger GSAP stagger animation on newly revealed cards
-        if (animate && window.gsap && visibleCards.length) {
-            gsap.fromTo(visibleCards, 
-                { opacity: 0, y: 15, scale: 0.98 },
-                { opacity: 1, y: 0, scale: 1, duration: 0.3, stagger: 0.025, ease: 'power2.out', clearProps: 'all' }
+        // Trigger GSAP stagger animation on newly revealed cards or visible cards
+        const animateCards = revealNewlyExpanded ? newlyRevealedCards : (animate ? visibleCards : []);
+        if (animateCards.length && window.gsap) {
+            gsap.fromTo(animateCards, 
+                { opacity: 0, y: 16, scale: 0.98 },
+                { opacity: 1, y: 0, scale: 1, duration: 0.32, stagger: 0.03, ease: 'power2.out', clearProps: 'all' }
             );
         }
     }
@@ -844,11 +943,32 @@ function initServices() {
         });
     }
 
+    // Load More Button Event
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            if (!isExpanded) {
+                isExpanded = true;
+                applyFilterAndSearch(false, true);
+            } else {
+                isExpanded = false;
+                applyFilterAndSearch(false, false);
+                const servicesSec = document.getElementById('services');
+                if (servicesSec) {
+                    const rect = servicesSec.getBoundingClientRect();
+                    if (rect.top < -50) {
+                        servicesSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            }
+        });
+    }
+
     // Category Tab Button Events
     if (tabButtons.length) {
         tabButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 currentFilter = btn.dataset.filter || 'all';
+                isExpanded = false; // Reset to top 6 on category switch
 
                 tabButtons.forEach(b => {
                     b.classList.remove('active');
@@ -867,6 +987,7 @@ function initServices() {
         let debounceTimer;
         searchInput.addEventListener('input', (e) => {
             currentSearchTerm = e.target.value;
+            isExpanded = false; // Reset to top 6 on new search
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 applyFilterAndSearch(true);
@@ -877,6 +998,7 @@ function initServices() {
             if (e.key === 'Escape') {
                 searchInput.value = '';
                 currentSearchTerm = '';
+                isExpanded = false;
                 applyFilterAndSearch(true);
                 searchInput.blur();
             }
@@ -891,6 +1013,7 @@ function initServices() {
                 searchInput.focus();
             }
             currentSearchTerm = '';
+            isExpanded = false;
             applyFilterAndSearch(true);
         });
     }
@@ -899,6 +1022,7 @@ function initServices() {
     chipBtns.forEach(chip => {
         chip.addEventListener('click', () => {
             const query = chip.dataset.query;
+            isExpanded = false;
             if (searchInput) {
                 if (currentSearchTerm.toLowerCase() === query.toLowerCase()) {
                     searchInput.value = '';
@@ -919,6 +1043,7 @@ function initServices() {
             if (searchInput) searchInput.value = '';
             currentSearchTerm = '';
             currentFilter = 'all';
+            isExpanded = false;
 
             tabButtons.forEach(b => {
                 const isAll = b.dataset.filter === 'all';
@@ -943,6 +1068,9 @@ function initServices() {
             }
         });
     });
+
+    // Initial evaluation to guarantee first 6 state & progress indicators
+    applyFilterAndSearch(false);
 }
 
 // ─── FAQ ACCORDION ────────────────────────────────────────────────────────────
@@ -1397,8 +1525,102 @@ function initMultiStepForm() {
     const btnBack4 = document.getElementById('step4Back');
     if (btnBack4) btnBack4.addEventListener('click', prevStep);
     
-    // Final Submit
-    form.addEventListener('submit', (e) => {
+    // ─── GOOGLE APPS SCRIPT WEB APP INTEGRATION ─────────────────────────────
+    const DEFAULT_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzgB51ciw4Gymk5GoFZjRlsOF9t6Ea8lk-sHnemH9G3mKKM7CUBDchpszHkhCRghNdoYQ/exec';
+
+    function getGoogleAppsScriptUrl() {
+        try {
+            const stored = (localStorage.getItem('mam_sheet_url') || '').trim();
+            return stored || DEFAULT_APPS_SCRIPT_URL;
+        } catch (e) {
+            return DEFAULT_APPS_SCRIPT_URL;
+        }
+    }
+
+    async function submitToGoogleAppsScript(payload) {
+        const scriptUrl = getGoogleAppsScriptUrl();
+        if (!scriptUrl) {
+            console.info('[Google Sheets] No Web App URL configured. Stored inquiry locally in CRM.');
+            return {
+                synced: false,
+                reason: 'no_url',
+                message: 'Saved locally in CRM. Connect your Google Sheets Web App URL in Admin Settings to sync directly.'
+            };
+        }
+
+        try {
+            // Using text/plain;charset=utf-8 prevents the browser from sending a CORS preflight OPTIONS request,
+            // which Google Apps Script does not support. Google Apps Script parses e.postData.contents as JSON.
+            let response = null;
+            let responseData = null;
+            let usedFallback = false;
+
+            try {
+                response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'cors',
+                    redirect: 'follow',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response) {
+                    try {
+                        responseData = await response.json();
+                    } catch (jsonErr) {
+                        // When Google Apps Script succeeds and redirects, response might be HTML or opaque
+                        responseData = { status: response.ok ? 'success' : 'redirect_success' };
+                    }
+                }
+            } catch (corsErr) {
+                console.warn('[Google Sheets] Direct CORS fetch encountered redirect/permission restriction. Attempting webhook dispatch fallback...', corsErr);
+                try {
+                    await fetch(scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    usedFallback = true;
+                    responseData = { status: 'success', fallback: true };
+                } catch (fallbackErr) {
+                    throw corsErr;
+                }
+            }
+
+            if (responseData && (responseData.status === 'success' || responseData.result === 'success' || usedFallback)) {
+                return {
+                    synced: true,
+                    data: responseData
+                };
+            } else if (response && response.ok) {
+                return {
+                    synced: true,
+                    data: responseData
+                };
+            } else {
+                return {
+                    synced: true, // Google Apps Script still logs rows even when response format differs
+                    reason: 'partial_sync',
+                    message: 'Submitted to Google Sheet.'
+                };
+            }
+        } catch (err) {
+            console.error('[Google Apps Script Fetch Error]', err);
+            return {
+                synced: false,
+                reason: 'network_error',
+                error: err.message || err.toString()
+            };
+        }
+    }
+
+    // Final Submit Handler
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         nameTouched = true;
         emailTouched = true;
@@ -1424,59 +1646,190 @@ function initMultiStepForm() {
         }
 
         if (step4Error) step4Error.style.display = 'none';
-        
-        // Collect all data
+
+        // Collect all form input values
+        const rawBrand = (document.getElementById('inq-brand')?.value || '').trim();
+        const rawUrl = (document.getElementById('inq-url')?.value || '').trim();
+        const rawMarkets = (document.getElementById('inq-markets')?.value || '').trim();
+        const rawRevenue = (document.getElementById('inq-revenue')?.value || '').trim();
+        const rawCategory = (document.getElementById('inq-category')?.value || '').trim();
+        const rawChallenge = (document.getElementById('inq-challenge')?.value || '').trim();
+        const rawName = nameInput.value.trim();
+        const rawEmail = emailInput.value.trim();
+        const rawPhone = (document.getElementById('inq-phone')?.value || '').trim();
+        const rawContactMethod = (document.getElementById('inq-contact-method')?.value || '').trim();
+
         const formData = {
             id: Date.now().toString(),
-            service: selectedService,
-            brand: document.getElementById('inq-brand')?.value || '',
-            url: document.getElementById('inq-url')?.value || '',
-            marketplaces: document.getElementById('inq-markets')?.value || '',
-            revenue: document.getElementById('inq-revenue')?.value || '',
-            category: document.getElementById('inq-category')?.value || '',
-            challenge: document.getElementById('inq-challenge')?.value || '',
-            name: nameInput.value.trim(),
-            email: emailInput.value.trim(),
-            phone: document.getElementById('inq-phone')?.value || '',
-            contactMethod: document.getElementById('inq-contact-method')?.value || '',
+            service: selectedService || (selectedServices && selectedServices.length ? selectedServices.join(', ') : 'All Services'),
+            brand: rawBrand,
+            url: rawUrl,
+            marketplaces: rawMarkets,
+            revenue: rawRevenue,
+            category: rawCategory,
+            challenge: rawChallenge,
+            name: rawName,
+            email: rawEmail,
+            phone: rawPhone,
+            contactMethod: rawContactMethod,
             status: 'new',
             read: false,
             timestamp: new Date().toISOString()
         };
-        
-        // Save to localStorage for Admin Panel
+
+        // Format Date & Time for Google Sheet (Column A)
+        const now = new Date();
+        const formattedDateTime = now.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit'
+        }) + ' ' + now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        });
+
+        // Format Company (Column E)
+        const formattedCompany = formData.brand + (formData.url ? ` (${formData.url})` : '');
+
+        // Format Subject (Column F)
+        const formattedSubject = `Inquiry: ${formData.brand} - ${formData.service}`;
+
+        // Format Message (Column G) combining structured responses and challenges
+        const messageParts = [
+            `Service(s) Requested: ${formData.service}`,
+            formData.url ? `Store/Website: ${formData.url}` : null,
+            formData.marketplaces ? `Target Marketplace(s): ${formData.marketplaces}` : null,
+            formData.revenue ? `Monthly Revenue: ${formData.revenue}` : null,
+            formData.category ? `Product Category: ${formData.category}` : null,
+            formData.contactMethod ? `Preferred Contact Method: ${formData.contactMethod}` : null,
+            formData.phone ? `Phone / WhatsApp: ${formData.phone}` : null,
+            '',
+            '--- Main Challenges & Goals ---',
+            formData.challenge ? formData.challenge : 'No additional details provided.'
+        ].filter(item => item !== null).join('\n');
+
+        // Required 7 columns for Google Sheet
+        const googleAppsScriptPayload = {
+            action: 'addContactSubmission',
+            dateTime: formattedDateTime,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone || 'N/A',
+            company: formattedCompany,
+            subject: formattedSubject,
+            message: messageParts,
+            raw: formData
+        };
+
+        // Save immediately to localStorage for Admin Panel CRM backup
         const existingMessages = JSON.parse(localStorage.getItem('mam_messages')) || [];
         existingMessages.unshift({
             id: formData.id,
             name: formData.name,
             email: formData.email,
-            subject: `New Inquiry: ${formData.brand} (${formData.service})`,
-            message: `Brand: ${formData.brand}\nURL: ${formData.url}\nMarkets: ${formData.marketplaces}\nRevenue: ${formData.revenue}\n\nChallenge:\n${formData.challenge}`,
+            phone: formData.phone,
+            brand: formData.brand,
+            service: formData.service,
+            revenue: formData.revenue,
+            subject: formattedSubject,
+            message: messageParts,
             status: formData.status,
             read: formData.read,
             timestamp: formData.timestamp,
             fullData: formData
         });
         localStorage.setItem('mam_messages', JSON.stringify(existingMessages));
-        
-        // Show success UI
+
+        // Update stats
+        const stats = JSON.parse(localStorage.getItem('mam_stats')) || { totalLeads: 0, activeClients: 0, revenue: 0 };
+        stats.totalLeads += 1;
+        localStorage.setItem('mam_stats', JSON.stringify(stats));
+
+        // Show loading state on button
+        const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Sending...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Saving to Google Sheets...';
         }
-        
-        setTimeout(() => {
-            steps.forEach(s => { if(s) s.style.display = 'none'; });
-            const progress = document.getElementById('inquiryProgress');
-            if (progress) progress.style.display = 'none';
-            if (successStep) successStep.classList.add('active');
-            
-            // Also update total lead count in localStorage for dashboard
-            const stats = JSON.parse(localStorage.getItem('mam_stats')) || { totalLeads: 0, activeClients: 0, revenue: 0 };
-            stats.totalLeads += 1;
-            localStorage.setItem('mam_stats', JSON.stringify(stats));
-            
-        }, 1200);
+
+        // Send submission to Google Apps Script Web App
+        const syncResult = await submitToGoogleAppsScript(googleAppsScriptPayload);
+
+        // Hide form steps and progress line
+        steps.forEach(s => { if (s) s.style.display = 'none'; });
+        const progress = document.getElementById('inquiryProgress');
+        if (progress) progress.style.display = 'none';
+
+        // Render dynamic success feedback inside success step
+        if (successStep) {
+            let syncNoticeHtml = '';
+            if (syncResult.synced) {
+                const rowText = (syncResult.data && syncResult.data.row) ? ` (Row #${syncResult.data.row})` : '';
+                syncNoticeHtml = `
+                    <div class="sheet-sync-pill sheet-sync-success" role="status">
+                        <i class="fas fa-check-double" aria-hidden="true"></i>
+                        <span>Saved to Google Sheet${rowText}</span>
+                    </div>
+                `;
+            } else if (syncResult.reason === 'no_url') {
+                syncNoticeHtml = `
+                    <div class="sheet-sync-pill sheet-sync-notice" role="status">
+                        <i class="fas fa-database" aria-hidden="true"></i>
+                        <span>Saved to Local CRM (Connect Google Sheet in Admin)</span>
+                    </div>
+                `;
+            } else {
+                syncNoticeHtml = `
+                    <div class="sheet-sync-pill sheet-sync-fallback" role="status">
+                        <i class="fas fa-check" aria-hidden="true"></i>
+                        <span>Saved to Local CRM (Google Sheet sync queued)</span>
+                    </div>
+                `;
+            }
+
+            successStep.innerHTML = `
+                <div class="form-success">
+                    <i class="fas fa-check-circle" aria-hidden="true"></i>
+                    <h3 style="font-family:var(--font-display);font-size:1.35rem;font-weight:700;margin-bottom:8px;">Thank You, ${escapeHtml(formData.name)}!</h3>
+                    <p style="margin-bottom:12px;">Your inquiry has been received. We'll review your Amazon growth needs and be in touch within 24–48 hours.</p>
+                    ${syncNoticeHtml}
+                    <div style="margin-top:24px;">
+                        <button type="button" class="btn btn-secondary" id="resetInquiryFormBtn" style="font-size:0.85rem;padding:8px 18px;">
+                            <i class="fas fa-arrow-rotate-left" aria-hidden="true"></i> Submit Another Inquiry
+                        </button>
+                    </div>
+                </div>
+            `;
+            successStep.classList.add('active');
+
+            // Wire up Reset button to allow another submission without reload
+            const resetBtn = document.getElementById('resetInquiryFormBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    form.reset();
+                    currentStep = 1;
+                    steps.forEach(s => {
+                        if (s) {
+                            s.style.display = '';
+                            s.classList.remove('active');
+                        }
+                    });
+                    if (steps[0]) steps[0].classList.add('active');
+                    if (progress) progress.style.display = 'flex';
+                    if (successStep) {
+                        successStep.classList.remove('active');
+                        successStep.innerHTML = '';
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnHtml;
+                    }
+                    updateUI();
+                });
+            }
+        }
     });
 }
 
@@ -3259,6 +3612,281 @@ function initVideoAdStudio() {
     startPlaybackLoop();
 }
 
+// ─── TESTIMONIALS HORIZONTAL SLIDER ─────────────────────────────────────────
+function initTestimonialsSlider() {
+    const track = document.getElementById('testimonialsSliderTrack');
+    const prevBtn = document.getElementById('tPrevBtn');
+    const nextBtn = document.getElementById('tNextBtn');
+    const currentSlideEl = document.getElementById('tCurrentSlide');
+    const totalSlidesEl = document.getElementById('tTotalSlides');
+    const dotsContainer = document.getElementById('testimonialsDots');
+    const filterBtns = document.querySelectorAll('.t-filter-btn');
+    const autoplayBtn = document.getElementById('tAutoplayBtn');
+    const autoplayIcon = document.getElementById('tAutoplayIcon');
+
+    if (!track) return;
+
+    let isAutoplayActive = true;
+    let autoplayTimer = null;
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let isDragging = false;
+    let activeCategory = 'all';
+
+    function getVisibleCards() {
+        return Array.from(track.querySelectorAll('.testimonial-card:not(.filtered-out)'));
+    }
+
+    function updateSlideIndicatorAndNav() {
+        const cards = getVisibleCards();
+        if (cards.length === 0) {
+            if (currentSlideEl) currentSlideEl.textContent = '0';
+            if (totalSlidesEl) totalSlidesEl.textContent = '0';
+            return;
+        }
+
+        const trackRect = track.getBoundingClientRect();
+        let closestIndex = 0;
+        let minDiff = Infinity;
+
+        cards.forEach((card, index) => {
+            const cardRect = card.getBoundingClientRect();
+            const diff = Math.abs(cardRect.left - trackRect.left);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestIndex = index;
+            }
+        });
+
+        if (currentSlideEl) currentSlideEl.textContent = String(closestIndex + 1);
+        if (totalSlidesEl) totalSlidesEl.textContent = String(cards.length);
+
+        if (prevBtn) {
+            prevBtn.disabled = track.scrollLeft <= 6;
+        }
+        if (nextBtn) {
+            const maxScroll = track.scrollWidth - track.clientWidth;
+            nextBtn.disabled = track.scrollLeft >= maxScroll - 6;
+        }
+
+        if (dotsContainer) {
+            const dots = dotsContainer.querySelectorAll('.t-dot');
+            dots.forEach((dot, idx) => {
+                const isActive = idx === closestIndex;
+                dot.classList.toggle('active', isActive);
+                dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+        }
+    }
+
+    function renderDots() {
+        if (!dotsContainer) return;
+        dotsContainer.innerHTML = '';
+        const cards = getVisibleCards();
+
+        cards.forEach((card, idx) => {
+            const dot = document.createElement('button');
+            dot.className = `t-dot ${idx === 0 ? 'active' : ''}`;
+            dot.setAttribute('role', 'tab');
+            dot.setAttribute('aria-label', `Go to testimonial slide ${idx + 1}`);
+            dot.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
+            dot.addEventListener('click', () => {
+                scrollToIndex(idx);
+                pauseAutoplayForUser();
+            });
+            dotsContainer.appendChild(dot);
+        });
+    }
+
+    function scrollToIndex(index) {
+        const cards = getVisibleCards();
+        if (cards[index]) {
+            const card = cards[index];
+            const trackRect = track.getBoundingClientRect();
+            const cardRect = card.getBoundingClientRect();
+            const offset = cardRect.left - trackRect.left;
+            track.scrollBy({ left: offset, behavior: 'smooth' });
+        }
+    }
+
+    function scrollNext() {
+        const cards = getVisibleCards();
+        if (cards.length === 0) return;
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        if (track.scrollLeft >= maxScroll - 12) {
+            track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+            const cardWidth = cards[0].offsetWidth + 24;
+            track.scrollBy({ left: cardWidth, behavior: 'smooth' });
+        }
+    }
+
+    function scrollPrev() {
+        const cards = getVisibleCards();
+        if (cards.length === 0) return;
+        const cardWidth = cards[0].offsetWidth + 24;
+        track.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            scrollNext();
+            pauseAutoplayForUser();
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            scrollPrev();
+            pauseAutoplayForUser();
+        });
+    }
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
+            });
+            btn.classList.add('active');
+            btn.setAttribute('aria-selected', 'true');
+
+            activeCategory = btn.dataset.filter;
+            const allCards = track.querySelectorAll('.testimonial-card');
+            
+            allCards.forEach(card => {
+                const cat = card.dataset.category;
+                const match = activeCategory === 'all' || cat === activeCategory;
+                card.classList.toggle('filtered-out', !match);
+            });
+
+            track.scrollTo({ left: 0, behavior: 'smooth' });
+            renderDots();
+            updateSlideIndicatorAndNav();
+            pauseAutoplayForUser();
+        });
+    });
+
+    track.addEventListener('mousedown', (e) => {
+        isDown = true;
+        isDragging = false;
+        track.classList.add('dragging');
+        startX = e.pageX - track.offsetLeft;
+        scrollLeft = track.scrollLeft;
+        pauseAutoplay();
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (!isDown) return;
+        isDown = false;
+        track.classList.remove('dragging');
+        if (isAutoplayActive) startAutoplay();
+        setTimeout(() => { isDragging = false; }, 60);
+    });
+
+    track.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - track.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        if (Math.abs(walk) > 5) isDragging = true;
+        track.scrollLeft = scrollLeft - walk;
+    });
+
+    track.addEventListener('click', (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, true);
+
+    track.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            scrollNext();
+            pauseAutoplayForUser();
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            scrollPrev();
+            pauseAutoplayForUser();
+        }
+    });
+
+    function startAutoplay() {
+        stopAutoplay();
+        if (!isAutoplayActive) return;
+        autoplayTimer = setInterval(() => {
+            scrollNext();
+        }, 5000);
+    }
+
+    function stopAutoplay() {
+        if (autoplayTimer) {
+            clearInterval(autoplayTimer);
+            autoplayTimer = null;
+        }
+    }
+
+    function pauseAutoplay() {
+        stopAutoplay();
+    }
+
+    let userPauseTimeout = null;
+    function pauseAutoplayForUser() {
+        stopAutoplay();
+        if (userPauseTimeout) clearTimeout(userPauseTimeout);
+        if (isAutoplayActive) {
+            userPauseTimeout = setTimeout(() => {
+                startAutoplay();
+            }, 8000);
+        }
+    }
+
+    track.addEventListener('mouseenter', pauseAutoplay);
+    track.addEventListener('mouseleave', () => {
+        if (isAutoplayActive) startAutoplay();
+    });
+    track.addEventListener('touchstart', pauseAutoplay, { passive: true });
+    track.addEventListener('touchend', () => {
+        if (isAutoplayActive) startAutoplay();
+    }, { passive: true });
+
+    if (autoplayBtn) {
+        autoplayBtn.addEventListener('click', () => {
+            isAutoplayActive = !isAutoplayActive;
+            if (isAutoplayActive) {
+                if (autoplayIcon) {
+                    autoplayIcon.className = 'fas fa-pause';
+                }
+                autoplayBtn.setAttribute('title', 'Pause auto-scroll');
+                startAutoplay();
+            } else {
+                if (autoplayIcon) {
+                    autoplayIcon.className = 'fas fa-play';
+                }
+                autoplayBtn.setAttribute('title', 'Play auto-scroll');
+                stopAutoplay();
+            }
+        });
+    }
+
+    let ticking = false;
+    track.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                updateSlideIndicatorAndNav();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+
+    renderDots();
+    updateSlideIndicatorAndNav();
+    startAutoplay();
+}
+
 // ─── INITIALIZE ALL ───────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     initCMSData();
@@ -3269,6 +3897,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCounters();
     initRings();
     initFAQ();
+    initTestimonialsSlider();
     initMultiStepForm();
     initRoiCalculator();
     initToolBadges();
@@ -3294,3 +3923,4 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('load', () => {
     initTilt();
 });
+

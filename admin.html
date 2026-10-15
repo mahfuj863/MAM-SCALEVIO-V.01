@@ -485,17 +485,110 @@
             </div>
             
             <div id="view-settings" class="view-section hidden">
-                <div class="glass-panel panel" style="max-width: 600px; margin-bottom: 24px;">
-                    <h3 class="panel-title" style="margin-bottom: 24px;"><i class="fas fa-database"></i> Database Connection</h3>
-                    <p style="color:var(--text-secondary); margin-bottom: 20px;">Currently using <strong>LocalStorage</strong> for data persistence.</p>
-                    <div class="form-group">
-                        <label>Google Sheets Web App URL (Optional Sync)</label>
-                        <input type="text" placeholder="https://script.google.com/macros/s/..." id="sheetUrlInput">
+                <div class="glass-panel panel" style="max-width: 800px; margin-bottom: 24px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                        <h3 class="panel-title" style="margin-bottom:0;"><i class="fas fa-table" style="color:#10b981;"></i> Google Sheets Integration</h3>
+                        <span id="sheetConnectionBadge" class="badge badge-secondary" style="font-size:0.8rem; padding:6px 12px;">
+                            <i class="fas fa-circle-notch fa-spin"></i> Checking...
+                        </span>
                     </div>
-                    <button class="btn btn-secondary"><i class="fas fa-link"></i> Connect Sheets</button>
+                    
+                    <p style="color:var(--text-secondary); margin-bottom: 20px; font-size:0.9rem; line-height:1.6;">
+                        Connect your deployed <strong>Google Apps Script Web App URL</strong> to automatically save all website contact form submissions into your Google Sheet as new rows with separate columns for <strong>Date & Time, Name, Email, Phone, Company, Subject, and Message</strong>.
+                    </p>
+
+                    <div class="form-group">
+                        <label style="display:flex; justify-content:space-between;">
+                            <span>Google Apps Script Web App URL</span>
+                            <a href="#appsScriptGuide" onclick="toggleAppsScriptGuide()" style="color:var(--primary); font-size:0.8rem; text-decoration:none;">
+                                <i class="fas fa-book-open"></i> View Setup Instructions &amp; Code
+                            </a>
+                        </label>
+                        <input type="text" placeholder="https://script.google.com/macros/s/AKfycb.../exec" id="sheetUrlInput" style="font-family:monospace; font-size:0.85rem;">
+                        <span style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; display:block;">
+                            Must end with <code>/exec</code> and be deployed with access set to <strong>"Anyone"</strong>.
+                        </span>
+                    </div>
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
+                        <button class="btn btn-primary" onclick="saveSheetUrl()">
+                            <i class="fas fa-save"></i> Save URL
+                        </button>
+                        <button class="btn btn-secondary" onclick="testSheetConnection()" id="btnTestSheet">
+                            <i class="fas fa-network-wired"></i> Test Connection
+                        </button>
+                        <button class="btn btn-secondary" onclick="sendTestLeadSubmission()" id="btnTestLead" style="border-color:rgba(16,185,129,0.3); color:#10b981;">
+                            <i class="fas fa-paper-plane"></i> Send Test Row to Sheet
+                        </button>
+                    </div>
+
+                    <!-- Test Output Box -->
+                    <div id="sheetTestOutput" style="display:none; margin-top:18px; padding:12px 16px; border-radius:8px; font-size:0.85rem; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.25);"></div>
+
+                    <!-- Column Mapping Reference -->
+                    <div style="margin-top:24px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.08);">
+                        <h4 style="font-size:0.88rem; color:var(--text-primary); margin-bottom:10px;">
+                            <i class="fas fa-columns" style="color:var(--primary);"></i> Google Sheet Column Mapping (Auto-Created)
+                        </h4>
+                        <div style="overflow-x:auto;">
+                            <table style="width:100%; font-size:0.8rem; border-collapse:collapse; text-align:left;">
+                                <thead>
+                                    <tr style="color:var(--text-muted); border-bottom:1px solid rgba(255,255,255,0.1);">
+                                        <th style="padding:6px 8px;">Col A</th>
+                                        <th style="padding:6px 8px;">Col B</th>
+                                        <th style="padding:6px 8px;">Col C</th>
+                                        <th style="padding:6px 8px;">Col D</th>
+                                        <th style="padding:6px 8px;">Col E</th>
+                                        <th style="padding:6px 8px;">Col F</th>
+                                        <th style="padding:6px 8px;">Col G</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="color:var(--text-primary);">
+                                        <td style="padding:6px 8px;"><strong>Date &amp; Time</strong></td>
+                                        <td style="padding:6px 8px;"><strong>Name</strong></td>
+                                        <td style="padding:6px 8px;"><strong>Email</strong></td>
+                                        <td style="padding:6px 8px;"><strong>Phone</strong></td>
+                                        <td style="padding:6px 8px;"><strong>Company</strong></td>
+                                        <td style="padding:6px 8px;"><strong>Subject</strong></td>
+                                        <td style="padding:6px 8px;"><strong>Message</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="glass-panel panel" style="max-width: 600px;">
+
+                <!-- Expandable Setup Guide -->
+                <div class="glass-panel panel" id="appsScriptGuidePanel" style="max-width: 800px; margin-bottom: 24px; display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
+                        <h3 class="panel-title" style="margin-bottom:0;"><i class="fas fa-file-code" style="color:var(--primary);"></i> Google Apps Script Code &amp; 5-Step Setup</h3>
+                        <button class="btn btn-secondary btn-icon" onclick="toggleAppsScriptGuide()" title="Close guide"><i class="fas fa-times"></i></button>
+                    </div>
+
+                    <ol style="color:var(--text-secondary); font-size:0.85rem; line-height:1.7; padding-left:20px; margin-bottom:20px;">
+                        <li>Open <a href="https://sheets.google.com" target="_blank" rel="noopener" style="color:var(--primary);">Google Sheets</a> and create a blank spreadsheet named <em>"MAM SCALEVIO Inquiries"</em>.</li>
+                        <li>Click <strong>Extensions &gt; Apps Script</strong> in the top menu.</li>
+                        <li>Delete any existing code in <code>Code.gs</code> and paste the script code below.</li>
+                        <li>Click <strong>Deploy &gt; New deployment</strong> &gt; Select type <strong>Web app</strong>:
+                            <ul style="margin:6px 0 6px 16px;">
+                                <li>Execute as: <strong>Me (your email)</strong></li>
+                                <li>Who has access: <strong>Anyone</strong> (critical for public website submissions)</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Deploy</strong>, authorize permissions, copy the <strong>Web app URL</strong>, and paste it in the box above!</li>
+                    </ol>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">Apps Script Code (google-apps-script.js)</span>
+                        <button class="btn btn-secondary" onclick="copyAppsScriptCode()" style="font-size:0.78rem; padding:4px 12px;">
+                            <i class="fas fa-copy"></i> Copy Code
+                        </button>
+                    </div>
+                    <textarea id="appsScriptCodeArea" readonly style="width:100%; height:200px; font-family:monospace; font-size:0.75rem; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#e2e8f0; padding:10px; resize:vertical;"></textarea>
+                </div>
+
+                <div class="glass-panel panel" style="max-width: 800px;">
                     <h3 class="panel-title" style="margin-bottom: 24px;"><i class="fab fa-whatsapp"></i> WhatsApp Integration</h3>
                     <div class="form-group">
                         <label>WhatsApp Number</label>
@@ -691,6 +784,18 @@
                 document.getElementById('resTitle').value = res.title || '';
                 document.getElementById('resUrl').value = res.url || '';
             }
+
+            // Load Google Sheets Web App URL & Status
+            const DEFAULT_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzgB51ciw4Gymk5GoFZjRlsOF9t6Ea8lk-sHnemH9G3mKKM7CUBDchpszHkhCRghNdoYQ/exec';
+            let storedSheetUrl = (localStorage.getItem('mam_sheet_url') || '').trim();
+            if (!storedSheetUrl) {
+                storedSheetUrl = DEFAULT_APPS_SCRIPT_URL;
+                localStorage.setItem('mam_sheet_url', DEFAULT_APPS_SCRIPT_URL);
+            }
+            const sheetInput = document.getElementById('sheetUrlInput');
+            if (sheetInput) sheetInput.value = storedSheetUrl;
+            updateSheetStatusBadge(storedSheetUrl);
+            loadAppsScriptCodeToArea();
             
             updateDashboard();
             renderLeads();
@@ -911,6 +1016,226 @@
             const url = document.getElementById('resUrl').value;
             localStorage.setItem('mam_v2_resources', JSON.stringify({title, url}));
             showToast('Resources saved.');
+        }
+
+        // --- Google Sheets Sync & Apps Script Management --- //
+        
+        function updateSheetStatusBadge(url) {
+            const badge = document.getElementById('sheetConnectionBadge');
+            if (!badge) return;
+            if (url && url.startsWith('http')) {
+                badge.className = 'badge badge-success';
+                badge.innerHTML = '<i class="fas fa-check-circle"></i> Configured';
+            } else {
+                badge.className = 'badge badge-warning';
+                badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Not Connected (Local CRM Only)';
+            }
+        }
+
+        function saveSheetUrl() {
+            const input = document.getElementById('sheetUrlInput');
+            const url = (input ? input.value : '').trim();
+            if (url && !url.startsWith('https://script.google.com/macros/s/AKfycbzgB51ciw4Gymk5GoFZjRlsOF9t6Ea8lk-sHnemH9G3mKKM7CUBDchpszHkhCRghNdoYQ/exec')) {
+                showToast('https://script.google.com/macros/s/AKfycbzgB51ciw4Gymk5GoFZjRlsOF9t6Ea8lk-sHnemH9G3mKKM7CUBDchpszHkhCRghNdoYQ/exec', true);
+            }
+            localStorage.setItem('mam_sheet_url', url);
+            updateSheetStatusBadge(url);
+            showToast(url ? 'Google Sheets Web App URL saved successfully!' : 'Google Sheets URL cleared. Using Local CRM.');
+        }
+
+        async function testSheetConnection() {
+            const url = (document.getElementById('sheetUrlInput')?.value || '').trim();
+            const outputBox = document.getElementById('sheetTestOutput');
+            const btn = document.getElementById('btnTestSheet');
+            
+            if (!url) {
+                showToast('Please enter a Google Apps Script Web App URL first.', true);
+                if (outputBox) {
+                    outputBox.style.display = 'block';
+                    outputBox.style.borderColor = 'rgba(239,68,68,0.4)';
+                    outputBox.innerHTML = '<strong style="color:#ef4444;"><i class="fas fa-times-circle"></i> No URL provided:</strong> Please enter your deployed Google Apps Script URL above.';
+                }
+                return;
+            }
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+            }
+            if (outputBox) {
+                outputBox.style.display = 'block';
+                outputBox.style.borderColor = 'rgba(59,130,246,0.4)';
+                outputBox.innerHTML = '<span style="color:#60a5fa;"><i class="fas fa-circle-notch fa-spin"></i> Pinging Google Apps Script Web App...</span>';
+            }
+
+            const startTime = Date.now();
+            try {
+                const pingUrl = url + (url.includes('?') ? '&' : '?') + 'action=ping&_t=' + startTime;
+                const response = await fetch(pingUrl, {
+                    method: 'GET',
+                    mode: 'cors',
+                    redirect: 'follow'
+                });
+
+                const elapsed = Date.now() - startTime;
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch(e) {}
+
+                if (response.ok || (data && (data.status === 'success' || data.result === 'success'))) {
+                    updateSheetStatusBadge(url);
+                    localStorage.setItem('mam_sheet_url', url);
+                    showToast('Connection verified successfully! (' + elapsed + 'ms)');
+                    if (outputBox) {
+                        outputBox.style.borderColor = 'rgba(16,185,129,0.4)';
+                        outputBox.innerHTML = `
+                            <strong style="color:#10b981;"><i class="fas fa-check-circle"></i> Connection Successful (${elapsed}ms)</strong><br>
+                            <span style="color:var(--text-secondary); font-size:0.8rem;">
+                                Endpoint is active and ready to append submissions to sheet: <strong>${data?.sheetName || 'Contact Submissions'}</strong>.<br>
+                                Columns: <em>${(data?.columns || ['Date & Time', 'Name', 'Email', 'Phone', 'Company', 'Subject', 'Message']).join(' | ')}</em>
+                            </span>
+                        `;
+                    }
+                } else {
+                    throw new Error(`Endpoint returned status ${response.status}`);
+                }
+            } catch (err) {
+                console.error('[Sheet Test Error]', err);
+                showToast('Failed to connect to Google Apps Script. Check deployment settings.', true);
+                if (outputBox) {
+                    outputBox.style.borderColor = 'rgba(239,68,68,0.4)';
+                    outputBox.innerHTML = `
+                        <strong style="color:#ef4444;"><i class="fas fa-exclamation-triangle"></i> Connection Error:</strong><br>
+                        <span style="color:var(--text-secondary); font-size:0.8rem;">
+                            ${err.message || 'Network request failed'}.<br>
+                            Make sure your deployment has <strong>Who has access: "Anyone"</strong>, and that you are using the <code>/exec</code> URL.
+                        </span>
+                    `;
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-network-wired"></i> Test Connection';
+                }
+            }
+        }
+
+        async function sendTestLeadSubmission() {
+            const url = (document.getElementById('sheetUrlInput')?.value || '').trim();
+            const outputBox = document.getElementById('sheetTestOutput');
+            const btn = document.getElementById('btnTestLead');
+
+            if (!url) {
+                showToast('Please enter and save your Google Apps Script Web App URL first.', true);
+                return;
+            }
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Test...';
+            }
+            if (outputBox) {
+                outputBox.style.display = 'block';
+                outputBox.style.borderColor = 'rgba(59,130,246,0.4)';
+                outputBox.innerHTML = '<span style="color:#60a5fa;"><i class="fas fa-circle-notch fa-spin"></i> Appending test row to Google Sheet...</span>';
+            }
+
+            const now = new Date();
+            const testPayload = {
+                action: 'addContactSubmission',
+                dateTime: now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }) + ' ' + now.toLocaleTimeString('en-US'),
+                name: 'Test Prospect (Admin Verification)',
+                email: 'test.verification@example.com',
+                phone: '+1 (555) 019-2834',
+                company: 'Scalevio Test Brands Inc (amazon.com/shops/test)',
+                subject: 'Inquiry: Scalevio Test - Amazon Account Management',
+                message: 'This is an automated test lead dispatched from the MAM SCALEVIO Admin Dashboard to verify Google Sheet new row append and column mapping.'
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    mode: 'cors',
+                    redirect: 'follow',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    },
+                    body: JSON.stringify(testPayload)
+                });
+
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch(e) {}
+
+                showToast('Test row appended to Google Sheet successfully!');
+                if (outputBox) {
+                    outputBox.style.borderColor = 'rgba(16,185,129,0.4)';
+                    outputBox.innerHTML = `
+                        <strong style="color:#10b981;"><i class="fas fa-check-double"></i> Test Row Appended Successfully!</strong><br>
+                        <span style="color:var(--text-secondary); font-size:0.8rem;">
+                            Added row #${data?.row || 'new'} with columns: <strong>Date & Time, Name, Email, Phone, Company, Subject, Message</strong>.<br>
+                            Open your Google Sheet to verify the new row!
+                        </span>
+                    `;
+                }
+            } catch (err) {
+                console.error('[Send Test Lead Error]', err);
+                showToast('Failed to append test row: ' + (err.message || 'Network error'), true);
+                if (outputBox) {
+                    outputBox.style.borderColor = 'rgba(239,68,68,0.4)';
+                    outputBox.innerHTML = `
+                        <strong style="color:#ef4444;"><i class="fas fa-times-circle"></i> Test Submission Failed:</strong><br>
+                        <span style="color:var(--text-secondary); font-size:0.8rem;">
+                            ${err.message || 'Network request failed'}. Please check Web App URL deployment permissions.
+                        </span>
+                    `;
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Test Row to Sheet';
+                }
+            }
+        }
+
+        function toggleAppsScriptGuide() {
+            const panel = document.getElementById('appsScriptGuidePanel');
+            if (!panel) return;
+            const isHidden = panel.style.display === 'none' || panel.style.display === '';
+            panel.style.display = isHidden ? 'block' : 'none';
+            if (isHidden) {
+                loadAppsScriptCodeToArea();
+                panel.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        async function loadAppsScriptCodeToArea() {
+            const area = document.getElementById('appsScriptCodeArea');
+            if (!area || area.value) return;
+            try {
+                const res = await fetch('google-apps-script.js');
+                if (res.ok) {
+                    area.value = await res.text();
+                }
+            } catch (e) {
+                area.value = '// Refer to google-apps-script.js file in root directory';
+            }
+        }
+
+        function copyAppsScriptCode() {
+            const area = document.getElementById('appsScriptCodeArea');
+            if (!area) return;
+            if (!area.value) {
+                loadAppsScriptCodeToArea().then(() => {
+                    navigator.clipboard.writeText(area.value);
+                    showToast('Apps Script code copied to clipboard!');
+                });
+            } else {
+                navigator.clipboard.writeText(area.value);
+                showToast('Apps Script code copied to clipboard!');
+            }
         }
 
         function openServiceModal(id = null) {
