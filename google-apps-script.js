@@ -24,6 +24,15 @@
  *  - Backwards-compatible with MAM SCALEVIO CMS (Posts, Messages, Content)
  * 
  * ------------------------------------------------------------------------------
+ * ACTIVE PRODUCTION DEPLOYMENT:
+ * ------------------------------------------------------------------------------
+ *  - Deployment ID: AKfycbzgB51ciw4Gymk5GoFZjRlsOF9t6Ea8lk-sHnemH9G3mKKM7CUBDchpszHkhCRghNdoYQ
+ *  - Web App URL:   https://script.google.com/macros/s/AKfycbzgB51ciw4Gymk5GoFZjRlsOF9t6Ea8lk-sHnemH9G3mKKM7CUBDchpszHkhCRghNdoYQ/exec
+ *  - Library URL:   https://script.google.com/macros/library/d/10dhMIi52fpm8zn2AcI3ZlElmKAEdWVaNDv8y6SWd9Jt_8o4X7Q6CMGy-/2
+ *  - Library ID:    10dhMIi52fpm8zn2AcI3ZlElmKAEdWVaNDv8y6SWd9Jt_8o4X7Q6CMGy-
+ *  - WhatsApp:      +8801890595543
+ * 
+ * ------------------------------------------------------------------------------
  * DEPLOYMENT INSTRUCTIONS (Quick 5-Step Guide):
  * ------------------------------------------------------------------------------
  * 1. Create a Google Sheet at https://sheets.google.com (e.g. named "MAM SCALEVIO Inquiries")

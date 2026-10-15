@@ -1549,8 +1549,27 @@ function initMultiStepForm() {
         }
 
         try {
-            // Using text/plain;charset=utf-8 prevents the browser from sending a CORS preflight OPTIONS request,
-            // which Google Apps Script does not support. Google Apps Script parses e.postData.contents as JSON.
+            // Priority 1: Try server-side proxy route (100% bypasses browser iframe & CORS restrictions)
+            try {
+                const proxyResponse = await fetch('/api/proxy-sheet', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: scriptUrl, payload })
+                });
+                if (proxyResponse.ok) {
+                    const proxyData = await proxyResponse.json();
+                    if (proxyData && proxyData.success) {
+                        return {
+                            synced: true,
+                            data: proxyData.data || proxyData
+                        };
+                    }
+                }
+            } catch (proxyErr) {
+                console.info('[Google Sheets] Server proxy dispatch unavailable, attempting direct fetch...', proxyErr);
+            }
+
+            // Priority 2: Direct browser fetch with text/plain (bypasses CORS preflight)
             let response = null;
             let responseData = null;
             let usedFallback = false;
@@ -1906,16 +1925,36 @@ function initCMSData() {
         if (sub && home.subtitle) sub.innerText = home.subtitle;
     }
 
-    // WhatsApp Settings
-    const settingsData = localStorage.getItem('mam_v2_settings');
-    if (settingsData) {
-        const settings = JSON.parse(settingsData);
-        const waBtn = document.getElementById('whatsappBtn');
-        if (waBtn && settings.waNumber) {
-            const msg = encodeURIComponent(settings.waMessage || 'Hello MAM SCALEVIO team!');
-            waBtn.href = `https://wa.me/${settings.waNumber.replace(/[^0-9]/g, '')}?text=${msg}`;
+    // WhatsApp Settings & Integration (+8801890595543)
+    const DEFAULT_WA_NUMBER = '8801890595543';
+    const DEFAULT_WA_MSG = 'Hi MAM SCALEVIO team, I want to discuss Amazon growth support for my brand.';
+    let currentWaNum = DEFAULT_WA_NUMBER;
+    let currentWaMsg = DEFAULT_WA_MSG;
+
+    try {
+        const settingsData = localStorage.getItem('mam_v2_settings');
+        if (settingsData) {
+            const settings = JSON.parse(settingsData);
+            if (settings.waNumber) currentWaNum = settings.waNumber.replace(/[^0-9]/g, '');
+            if (settings.waMessage) currentWaMsg = settings.waMessage;
         }
-    }
+    } catch(e) {}
+
+    const encodedWaMsg = encodeURIComponent(currentWaMsg);
+    const fullWaUrl = `https://wa.me/${currentWaNum}?text=${encodedWaMsg}`;
+
+    const waBtn = document.getElementById('whatsappBtn');
+    if (waBtn) waBtn.href = fullWaUrl;
+
+    const contactWaLink = document.getElementById('contact-wa-link');
+    if (contactWaLink) contactWaLink.href = fullWaUrl;
+
+    const allWaAnchors = document.querySelectorAll('a[href*="wa.me"]');
+    allWaAnchors.forEach(a => {
+        if (!a.id || (a.id !== 'whatsappBtn' && a.id !== 'contact-wa-link')) {
+            a.href = fullWaUrl;
+        }
+    });
 
     // Services
     const srvData = localStorage.getItem('mam_v2_services');

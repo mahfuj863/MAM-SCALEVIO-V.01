@@ -170,9 +170,9 @@
         .nav-item:hover { color: var(--text-primary); background: rgba(255,255,255,0.03); }
         .nav-item.active { background: var(--primary-dim); color: var(--primary); font-weight: 600; }
         .nav-item.active i { color: var(--primary); }
-        .nav-badge { margin-left: auto; background: var(--primary); color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 6px; border-radius: 100px; }
-
-        .sidebar-footer { padding: 20px; border-top: 1px solid var(--border); }
+        .sidebar-footer { display: none !important; }
+        .nav-item-logout { color: var(--rose) !important; margin-top: 4px; }
+        .nav-item-logout:hover { background: rgba(255,107,138,0.12) !important; color: #ff8da6 !important; }
         
         /* ===== MAIN CONTENT ===== */
         .main { flex: 1; overflow-y: auto; height: 100vh; position: relative; }
@@ -302,11 +302,14 @@
             
             <div class="nav-section-title" style="margin-top: 12px;">Configuration</div>
             <div class="nav-item" data-view="settings"><i class="fas fa-cog"></i> Platform Settings</div>
+
+            <div class="nav-section-title" style="margin-top: 12px;">Account & Site</div>
+            <div class="nav-item" onclick="window.open('index.html', '_blank')"><i class="fas fa-external-link-alt"></i> View Website</div>
+            <div class="nav-item nav-item-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sign Out</div>
         </nav>
         
-        <div class="sidebar-footer">
-            <button class="btn btn-secondary" onclick="logout()" style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
-        </div>
+        <!-- Sidebar Footer Hidden — replaced with sleek menu style above -->
+        <div class="sidebar-footer" style="display: none !important;"></div>
     </aside>
 
     <!-- MAIN APP -->
@@ -508,6 +511,22 @@
                         <span style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; display:block;">
                             Must end with <code>/exec</code> and be deployed with access set to <strong>"Anyone"</strong>.
                         </span>
+                        
+                        <!-- Deployment & Library Details -->
+                        <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px; background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:12px 14px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:0.78rem;">
+                                <span style="color:var(--text-secondary);"><i class="fas fa-fingerprint" style="color:var(--primary);"></i> <strong>Deployment ID:</strong> <code style="color:#a5b4fc; background:rgba(255,255,255,0.04); padding:2px 6px; border-radius:4px;">AKfycbzgB51ciw4Gymk5GoFZjRlsOF9t6Ea8lk-sHnemH9G3mKKM7CUBDchpszHkhCRghNdoYQ</code></span>
+                                <button type="button" class="btn btn-secondary" style="font-size:0.72rem; padding:3px 8px;" onclick="navigator.clipboard.writeText('AKfycbzgB51ciw4Gymk5GoFZjRlsOF9t6Ea8lk-sHnemH9G3mKKM7CUBDchpszHkhCRghNdoYQ'); showToast('Deployment ID copied!');">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:0.78rem; border-top:1px solid rgba(255,255,255,0.04); padding-top:8px;">
+                                <span style="color:var(--text-secondary);"><i class="fas fa-book" style="color:#10b981;"></i> <strong>Library URL:</strong> <a href="https://script.google.com/macros/library/d/10dhMIi52fpm8zn2AcI3ZlElmKAEdWVaNDv8y6SWd9Jt_8o4X7Q6CMGy-/2" target="_blank" rel="noopener" style="color:#6ee7b7; text-decoration:underline;">v2 Library</a></span>
+                                <button type="button" class="btn btn-secondary" style="font-size:0.72rem; padding:3px 8px;" onclick="navigator.clipboard.writeText('https://script.google.com/macros/library/d/10dhMIi52fpm8zn2AcI3ZlElmKAEdWVaNDv8y6SWd9Jt_8o4X7Q6CMGy-/2'); showToast('Library URL copied!');">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
@@ -589,16 +608,27 @@
                 </div>
 
                 <div class="glass-panel panel" style="max-width: 800px;">
-                    <h3 class="panel-title" style="margin-bottom: 24px;"><i class="fab fa-whatsapp"></i> WhatsApp Integration</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                        <h3 class="panel-title" style="margin-bottom:0;"><i class="fab fa-whatsapp" style="color:#25d366;"></i> WhatsApp Integration</h3>
+                        <span class="badge badge-success" style="font-size:0.75rem;"><i class="fas fa-check-circle"></i> Active</span>
+                    </div>
                     <div class="form-group">
                         <label>WhatsApp Number</label>
-                        <input type="text" value="+1234567890" id="waNumberInput">
+                        <input type="text" value="+8801890595543" id="waNumberInput" placeholder="+8801890595543">
+                        <span style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; display:block;">
+                            Primary brand contact number: <code>+8801890595543</code>. Syncs automatically to floating chat bubble, contact channels, and footer.
+                        </span>
                     </div>
                     <div class="form-group">
-                        <label>Default Message</label>
-                        <input type="text" value="Hi MAM SCALEVIO team, I need help with my Amazon FBA brand." id="waMessageInput">
+                        <label>Default Inquiry Message</label>
+                        <input type="text" value="Hi MAM SCALEVIO team, I want to discuss Amazon growth support for my brand." id="waMessageInput">
                     </div>
-                    <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Save WhatsApp Settings</button>
+                    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:16px;">
+                        <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Save WhatsApp Settings</button>
+                        <a href="https://wa.me/8801890595543?text=Hi%20MAM%20SCALEVIO%2C%20I%20want%20to%20discuss%20Amazon%20growth%20support%20for%20my%20brand." target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="border-color:rgba(37,211,102,0.4); color:#25d366;">
+                            <i class="fab fa-whatsapp"></i> Test WhatsApp Chat (+8801890595543)
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -763,10 +793,16 @@
             }
 
             const storedSettings = localStorage.getItem('mam_v2_settings');
+            const defaultWa = '+8801890595543';
+            const defaultMsg = 'Hi MAM SCALEVIO team, I want to discuss Amazon growth support for my brand.';
             if(storedSettings) {
                 const settings = JSON.parse(storedSettings);
-                document.getElementById('waNumberInput').value = settings.waNumber || '';
-                document.getElementById('waMessageInput').value = settings.waMessage || '';
+                document.getElementById('waNumberInput').value = settings.waNumber || defaultWa;
+                document.getElementById('waMessageInput').value = settings.waMessage || defaultMsg;
+            } else {
+                document.getElementById('waNumberInput').value = defaultWa;
+                document.getElementById('waMessageInput').value = defaultMsg;
+                localStorage.setItem('mam_v2_settings', JSON.stringify({ waNumber: defaultWa, waMessage: defaultMsg }));
             }
 
             const storedMetrics = localStorage.getItem('mam_v2_metrics');
@@ -1035,8 +1071,8 @@
         function saveSheetUrl() {
             const input = document.getElementById('sheetUrlInput');
             const url = (input ? input.value : '').trim();
-            if (url && !url.startsWith('https://script.google.com/macros/s/AKfycbzgB51ciw4Gymk5GoFZjRlsOF9t6Ea8lk-sHnemH9G3mKKM7CUBDchpszHkhCRghNdoYQ/exec')) {
-                showToast('https://script.google.com/macros/s/AKfycbzgB51ciw4Gymk5GoFZjRlsOF9t6Ea8lk-sHnemH9G3mKKM7CUBDchpszHkhCRghNdoYQ/exec', true);
+            if (url && !url.startsWith('https://script.google.com/macros/s/')) {
+                showToast('Warning: Expected a Google Apps Script Web App URL (https://script.google.com/macros/s/...)', true);
             }
             localStorage.setItem('mam_sheet_url', url);
             updateSheetStatusBadge(url);
@@ -1068,48 +1104,66 @@
                 outputBox.innerHTML = '<span style="color:#60a5fa;"><i class="fas fa-circle-notch fa-spin"></i> Pinging Google Apps Script Web App...</span>';
             }
 
-            const startTime = Date.now();
             try {
-                const pingUrl = url + (url.includes('?') ? '&' : '?') + 'action=ping&_t=' + startTime;
-                const response = await fetch(pingUrl, {
-                    method: 'GET',
-                    mode: 'cors',
-                    redirect: 'follow'
-                });
+                // Call server-side proxy to bypass browser iframe & CORS restrictions
+                const res = await fetch(`/api/test-sheet?url=${encodeURIComponent(url)}`);
+                const data = await res.json();
 
-                const elapsed = Date.now() - startTime;
-                let data = null;
-                try {
-                    data = await response.json();
-                } catch(e) {}
-
-                if (response.ok || (data && (data.status === 'success' || data.result === 'success'))) {
+                if (data && data.success) {
                     updateSheetStatusBadge(url);
                     localStorage.setItem('mam_sheet_url', url);
-                    showToast('Connection verified successfully! (' + elapsed + 'ms)');
+                    showToast('Connection verified successfully! (' + (data.elapsed || 0) + 'ms)');
                     if (outputBox) {
                         outputBox.style.borderColor = 'rgba(16,185,129,0.4)';
                         outputBox.innerHTML = `
-                            <strong style="color:#10b981;"><i class="fas fa-check-circle"></i> Connection Successful (${elapsed}ms)</strong><br>
-                            <span style="color:var(--text-secondary); font-size:0.8rem;">
-                                Endpoint is active and ready to append submissions to sheet: <strong>${data?.sheetName || 'Contact Submissions'}</strong>.<br>
-                                Columns: <em>${(data?.columns || ['Date & Time', 'Name', 'Email', 'Phone', 'Company', 'Subject', 'Message']).join(' | ')}</em>
+                            <strong style="color:#10b981;"><i class="fas fa-check-circle"></i> Connection Successful (${data.elapsed || 0}ms)</strong><br>
+                            <span style="color:var(--text-secondary); font-size:0.82rem; margin-top:4px; display:block;">
+                                Endpoint responded and is ready to append rows to your Google Sheet.<br>
+                                Auto-mapped columns: <strong>Date &amp; Time, Name, Email, Phone, Company, Subject, Message</strong>.
+                            </span>
+                        `;
+                    }
+                } else if (data && data.code === 'MISSING_FUNCTION_IN_DEPLOYMENT') {
+                    showToast('Action Needed: Update Apps Script to "New version"', true);
+                    if (outputBox) {
+                        outputBox.style.borderColor = 'rgba(245,158,11,0.5)';
+                        outputBox.innerHTML = `
+                            <strong style="color:#f59e0b;"><i class="fas fa-exclamation-triangle"></i> Action Needed in Google Apps Script (30 seconds):</strong><br>
+                            <span style="color:var(--text-primary); font-size:0.85rem; line-height:1.6; display:block; margin:6px 0;">
+                                Google Apps Script answered, but the deployed version does not have <code>doPost</code> published yet.
+                            </span>
+                            <div style="background:rgba(0,0,0,0.3); border-radius:8px; padding:10px 14px; font-size:0.8rem; color:#cbd5e1; line-height:1.7; margin-top:8px;">
+                                <strong>Follow these 3 quick steps:</strong><br>
+                                1. Click <button class="btn btn-secondary" style="font-size:0.75rem; padding:2px 8px; margin:0 4px;" onclick="copyAppsScriptCode()"><i class="fas fa-copy"></i> Copy Script Code</button><br>
+                                2. Open your <a href="https://script.google.com" target="_blank" rel="noopener" style="color:#60a5fa; text-decoration:underline;">Google Apps Script Project</a>, paste into <code>Code.gs</code>, and click <strong>Save (Disk icon)</strong>.<br>
+                                3. Click <strong>Deploy &gt; Manage deployments</strong> &gt; click <strong>Edit (Pencil icon)</strong> &gt; set Version to <strong>"New version"</strong> &gt; click <strong>Deploy</strong>!
+                            </div>
+                        `;
+                    }
+                } else if (data && data.code === 'AUTH_REQUIRED') {
+                    showToast('Action Needed: Set Who has access to Anyone', true);
+                    if (outputBox) {
+                        outputBox.style.borderColor = 'rgba(239,68,68,0.4)';
+                        outputBox.innerHTML = `
+                            <strong style="color:#ef4444;"><i class="fas fa-lock"></i> Access Restricted:</strong><br>
+                            <span style="color:var(--text-secondary); font-size:0.82rem;">
+                                Google is prompting for account login. Please edit your deployment in Google Apps Script and change <strong>"Who has access"</strong> to <strong>"Anyone"</strong>.
                             </span>
                         `;
                     }
                 } else {
-                    throw new Error(`Endpoint returned status ${response.status}`);
+                    throw new Error(data?.error || 'Unknown response from Google Apps Script');
                 }
             } catch (err) {
                 console.error('[Sheet Test Error]', err);
-                showToast('Failed to connect to Google Apps Script. Check deployment settings.', true);
+                showToast('Failed to connect to Google Apps Script.', true);
                 if (outputBox) {
                     outputBox.style.borderColor = 'rgba(239,68,68,0.4)';
                     outputBox.innerHTML = `
                         <strong style="color:#ef4444;"><i class="fas fa-exclamation-triangle"></i> Connection Error:</strong><br>
                         <span style="color:var(--text-secondary); font-size:0.8rem;">
-                            ${err.message || 'Network request failed'}.<br>
-                            Make sure your deployment has <strong>Who has access: "Anyone"</strong>, and that you are using the <code>/exec</code> URL.
+                            ${err.message || 'Request failed'}.<br>
+                            Make sure your deployment has <strong>Who has access: "Anyone"</strong> and you are using the <code>/exec</code> URL.
                         </span>
                     `;
                 }
@@ -1147,42 +1201,56 @@
                 dateTime: now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }) + ' ' + now.toLocaleTimeString('en-US'),
                 name: 'Test Prospect (Admin Verification)',
                 email: 'test.verification@example.com',
-                phone: '+1 (555) 019-2834',
+                phone: '+8801890595543',
                 company: 'Scalevio Test Brands Inc (amazon.com/shops/test)',
                 subject: 'Inquiry: Scalevio Test - Amazon Account Management',
                 message: 'This is an automated test lead dispatched from the MAM SCALEVIO Admin Dashboard to verify Google Sheet new row append and column mapping.'
             };
 
             try {
-                const response = await fetch(url, {
+                // Call server-side proxy
+                const response = await fetch('/api/proxy-sheet', {
                     method: 'POST',
-                    mode: 'cors',
-                    redirect: 'follow',
-                    headers: {
-                        'Content-Type': 'text/plain;charset=utf-8'
-                    },
-                    body: JSON.stringify(testPayload)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, payload: testPayload })
                 });
 
-                let data = null;
-                try {
-                    data = await response.json();
-                } catch(e) {}
+                const data = await response.json();
 
-                showToast('Test row appended to Google Sheet successfully!');
-                if (outputBox) {
-                    outputBox.style.borderColor = 'rgba(16,185,129,0.4)';
-                    outputBox.innerHTML = `
-                        <strong style="color:#10b981;"><i class="fas fa-check-double"></i> Test Row Appended Successfully!</strong><br>
-                        <span style="color:var(--text-secondary); font-size:0.8rem;">
-                            Added row #${data?.row || 'new'} with columns: <strong>Date & Time, Name, Email, Phone, Company, Subject, Message</strong>.<br>
-                            Open your Google Sheet to verify the new row!
-                        </span>
-                    `;
+                if (data && data.success) {
+                    showToast('Test row appended to Google Sheet successfully!');
+                    if (outputBox) {
+                        outputBox.style.borderColor = 'rgba(16,185,129,0.4)';
+                        outputBox.innerHTML = `
+                            <strong style="color:#10b981;"><i class="fas fa-check-double"></i> Test Row Appended Successfully!</strong><br>
+                            <span style="color:var(--text-secondary); font-size:0.82rem; margin-top:4px; display:block;">
+                                Added row #${data?.data?.row || 'new'} with columns: <strong>Date &amp; Time, Name, Email, Phone, Company, Subject, Message</strong>.<br>
+                                Open your Google Sheet to verify the new row!
+                            </span>
+                        `;
+                    }
+                } else if (data && data.code === 'MISSING_FUNCTION_IN_DEPLOYMENT') {
+                    showToast('Update Apps Script to "New version"', true);
+                    if (outputBox) {
+                        outputBox.style.borderColor = 'rgba(245,158,11,0.5)';
+                        outputBox.innerHTML = `
+                            <strong style="color:#f59e0b;"><i class="fas fa-exclamation-triangle"></i> Deployment Update Required:</strong><br>
+                            <span style="color:var(--text-primary); font-size:0.85rem; line-height:1.6; display:block; margin:6px 0;">
+                                Your Google Apps Script responded, but needs to be saved and deployed as a <strong>"New version"</strong> so <code>doPost</code> is registered.
+                            </span>
+                            <div style="background:rgba(0,0,0,0.3); border-radius:8px; padding:10px 14px; font-size:0.8rem; color:#cbd5e1; line-height:1.7;">
+                                1. Click <button class="btn btn-secondary" style="font-size:0.75rem; padding:2px 8px;" onclick="copyAppsScriptCode()"><i class="fas fa-copy"></i> Copy Script Code</button><br>
+                                2. In <a href="https://script.google.com" target="_blank" rel="noopener" style="color:#60a5fa; text-decoration:underline;">Apps Script Editor</a>, paste into <code>Code.gs</code> and click <strong>Save</strong>.<br>
+                                3. Go to <strong>Deploy &gt; Manage deployments &gt; Edit &gt; New version &gt; Deploy</strong>!
+                            </div>
+                        `;
+                    }
+                } else {
+                    throw new Error(data?.error || 'Failed to append row');
                 }
             } catch (err) {
                 console.error('[Send Test Lead Error]', err);
-                showToast('Failed to append test row: ' + (err.message || 'Network error'), true);
+                showToast('Failed to append test row: ' + (err.message || 'Error'), true);
                 if (outputBox) {
                     outputBox.style.borderColor = 'rgba(239,68,68,0.4)';
                     outputBox.innerHTML = `

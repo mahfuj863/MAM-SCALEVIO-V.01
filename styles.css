@@ -4634,29 +4634,357 @@ button { cursor:pointer; border:none; background:none; font-family:var(--font-bo
     font-weight:500;
 }
 
-/* Mobile Sticky CTA */
-.mobile-sticky-cta {
-    display:none;
-    position:fixed;
-    bottom:0; left:0; right:0;
-    z-index:800;
-    padding:12px 16px;
-    background:rgba(5,8,16,0.95);
-    backdrop-filter:blur(16px);
-    border-top:1px solid var(--border);
+/* ===== REDESIGNED MENU-STYLE FOOTER DOCK ===== */
+.footer-menu-style {
+    padding: 50px 0 35px;
+    background: linear-gradient(180deg, rgba(12,18,32,0.92) 0%, rgba(5,8,16,1) 100%);
+    position: relative;
+    z-index: 10;
+    border-top: 1px solid rgba(255,255,255,0.08);
 }
-.btn-mobile-sticky {
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    width:100%;
-    padding:14px;
-    border-radius:var(--radius-pill);
-    background:linear-gradient(135deg, var(--primary), var(--secondary));
-    color:#fff;
-    font-weight:600;
-    font-size:0.9rem;
+
+.footer-dock {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 24px;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* Dock Top: Brand & Quick WhatsApp Contact */
+.footer-dock-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.footer-dock-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.footer-dock-brand .footer-brand {
+    margin-bottom: 0;
+}
+
+.footer-dock-meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.28);
+    color: #10b981;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.footer-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.footer-wa-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    border-radius: 100px;
+    background: rgba(37, 211, 102, 0.12);
+    border: 1px solid rgba(37, 211, 102, 0.3);
+    color: #25d366;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.footer-wa-pill:hover {
+    background: #25d366;
+    color: #ffffff;
+    box-shadow: 0 4px 18px rgba(37, 211, 102, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Dock Middle: The Segmented Navigation Menu */
+.footer-dock-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-dock-menu-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 100px;
+    flex-wrap: wrap;
+}
+
+.footer-dock-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.footer-dock-link i {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.footer-dock-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+}
+
+.footer-dock-link:hover i {
+    color: var(--primary);
+}
+
+.footer-dock-link-cta {
+    background: linear-gradient(135deg, rgba(79, 140, 255, 0.2), rgba(124, 106, 255, 0.25));
+    border: 1px solid rgba(79, 140, 255, 0.35);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.footer-dock-link-cta i {
+    color: #93c5fd;
+}
+
+.footer-dock-link-cta:hover {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #ffffff;
+    box-shadow: 0 4px 16px var(--primary-glow);
+}
+
+.footer-dock-link-cta:hover i {
+    color: #ffffff;
+}
+
+/* Dock Bottom: Action Triggers & Meta */
+.footer-dock-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    padding-top: 10px;
+}
+
+.footer-dock-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-dock-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.footer-dock-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+}
+
+.footer-dock-btn-primary {
+    background: rgba(79, 140, 255, 0.12);
+    border-color: rgba(79, 140, 255, 0.3);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.footer-dock-btn-primary:hover {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 4px 14px var(--primary-glow);
+}
+
+/* Bottom Copyright Bar */
+.footer-sub-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+    padding: 0 8px;
+}
+
+.footer-sub-links {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.footer-sub-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.footer-sub-link:hover {
+    color: var(--primary);
+}
+
+/* ===== MOBILE BOTTOM APP NAVIGATION BAR ===== */
+.mobile-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+    background: rgba(9, 14, 26, 0.88);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.mobile-bottom-nav-inner {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.mobile-nav-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 4px;
+    border-radius: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.68rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.mobile-nav-tab i {
+    font-size: 1.15rem;
+    transition: all 0.2s ease;
+}
+
+.mobile-nav-tab:hover,
+.mobile-nav-tab.active {
+    color: var(--primary);
+    background: rgba(79, 140, 255, 0.08);
+}
+
+.mobile-nav-tab.tab-wa {
+    color: #25d366;
+}
+
+.mobile-nav-tab.tab-wa:hover {
+    background: rgba(37, 211, 102, 0.12);
+}
+
+.mobile-nav-tab.tab-cta {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+@media (max-width: 860px) {
+    .footer-dock {
+        padding: 22px 20px;
+        border-radius: 18px;
+    }
+    .footer-dock-menu-list {
+        border-radius: 16px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .footer-dock-link {
+        padding: 7px 12px;
+        font-size: 0.8rem;
+    }
+    .footer-sub-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    /* Show mobile app bottom navigation bar */
+    .mobile-bottom-nav {
+        display: block;
+    }
+    /* Hide old single-button sticky CTA */
+    .mobile-sticky-cta {
+        display: none !important;
+    }
+    /* Provide bottom clearance for fixed mobile bar */
+    body {
+        padding-bottom: 72px;
+    }
 }
 
 /* ===== 7. ROI CALCULATOR STYLES ===== */
